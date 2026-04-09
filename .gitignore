@@ -1,0 +1,13 @@
+*.o
+*.exe
+*.dll
+*.a
+*.def
+*.res
+*.debug
+*.bookmarks
+*.layout
+*_private.*
+Report.txt
+makefile.win
+
