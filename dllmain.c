@@ -2,13 +2,6 @@
 #include "CHWEngine.h"
 #include <windows.h>
 
-#include "AudioProbe.h"
-#include "BoardProbe.h"
-#include "CpuProbe.h"
-#include "DiskProbe.h"
-#include "MonitorProbe.h"
-#include "PCIProbe.h"
-
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpvReserved)
 {
