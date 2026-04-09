@@ -9,6 +9,8 @@
 
 #include <windows.h>
 
+
+
 typedef struct {
 	WCHAR Model[128];
 	int   CoreCount;    // Physical Cores (P-cores + E-cores)
@@ -93,17 +95,11 @@ typedef struct {
 	int          NicCount;     
 } HW_REPORT;
 
-// Export functions
-DLLIMPORT void ProbeAudio(HW_REPORT* report);
-DLLIMPORT BOOL ProbeBoardAndRam(HW_REPORT* report);
-DLLIMPORT void ProbeCpu(HW_REPORT* report);
-DLLIMPORT void ProbeDisks(HW_REPORT* report);
-DLLIMPORT const WCHAR* GetVendorFullName(const WCHAR* pnpId);
-DLLIMPORT void ProbeMonitorsWMI(HW_REPORT* report);
-DLLIMPORT BOOL ProbeGpus(HW_REPORT* report);
-DLLIMPORT BOOL ProbeAudios(HW_REPORT* report);
-DLLIMPORT BOOL ProbeNics(HW_REPORT* report);
-
-
+#include "AudioProbe.h"
+#include "BoardProbe.h"
+#include "CpuProbe.h"
+#include "DiskProbe.h"
+#include "MonitorProbe.h"
+#include "PCIProbe.h"
 
 #endif
