@@ -19,8 +19,9 @@ typedef struct {
 
 typedef struct{
 	WCHAR Manufacturer[64];
+	WCHAR SystemName[64];
 	WCHAR Model[64];
-	WCHAR ChipSet[64];
+	WCHAR ChipsetName[128];
 	WCHAR ChipsetID[32];
 	WCHAR BiosVersion[32];
 } BOARD_INFO;
@@ -35,7 +36,7 @@ typedef struct{
 typedef struct {
 	WCHAR Vendor[64];   
 	WCHAR Model[128];    
-	WCHAR SubVendor[64];
+	WCHAR SubVendor[128];
 	WORD  VenID, DevID, SubVenID, SubDevID;
 	UINT64 VRAMSizeBytes;
 } GPU_INFO;

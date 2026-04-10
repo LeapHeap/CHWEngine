@@ -5,9 +5,9 @@
 #include <wchar.h>
 #include "CHWEngine.h"
 #include "PCIProbe.h"
+#include "BoardProbe.h" // For the mapper function
 
 #include <dxgi.h>
-// In MinGW, we need to manually link dxgi: add -ldxgi to your linker flags
 void Internal_GetVramViaDXGI(GPU_INFO* gpu) {
 	IDXGIFactory* pFactory = NULL;
 	
@@ -60,6 +60,15 @@ static void Internal_ParsePciId(const WCHAR* hwId, WORD* venId, WORD* devId, WOR
 	}
 }
 
+void Internal_IntToHexW(WORD val, WCHAR* outStr) {
+	const WCHAR* hexChars = L"0123456789ABCDEF";
+	outStr[0] = hexChars[(val >> 12) & 0xF];
+	outStr[1] = hexChars[(val >> 8) & 0xF];
+	outStr[2] = hexChars[(val >> 4) & 0xF];
+	outStr[3] = hexChars[val & 0xF];
+	outStr[4] = L'\0';
+}
+
 /* * Generic PCI scanner engine
 * Handles memory offset calculation for different struct types in HW_REPORT
 */
@@ -87,6 +96,10 @@ static int Internal_ScanPciBus(const GUID* classGuid, void* targetArray, int max
 			if (type == 0) { // GPU_INFO
 				GPU_INFO* gpu = (GPU_INFO*)currentEntry;
 				Internal_ParsePciId(hwIdList, &gpu->VenID, &gpu->DevID, &gpu->SubVenID, &gpu->SubDevID);
+				WCHAR subVenStr[5];
+				Internal_IntToHexW(gpu->SubVenID, subVenStr);
+				// SubVenID mapper
+				Internal_MapIdNative(L"Graphics.csv",subVenStr,gpu->SubVendor,128);
 				SetupDiGetDeviceRegistryPropertyW(hDevInfo, &devData, SPDRP_DEVICEDESC, 
 												  NULL, (PBYTE)gpu->Model, sizeof(gpu->Model), NULL);
 				gpu->VRAMSizeBytes = 0;

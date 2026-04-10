@@ -104,6 +104,73 @@ static void Internal_GetPciChipsetId(WCHAR* outId, int maxLen) {
 	SetupDiDestroyDeviceInfoList(hDevInfo);
 }
 
+void Internal_MapIdNative(const WCHAR* csvName, const WCHAR* searchId, WCHAR* outBuffer, int maxLen) {
+	WCHAR csvPath[MAX_PATH];
+	
+	// Construct path: db\[csvName]
+	// Assuming the 'db' folder is in the application root directory
+	lstrcpyW(csvPath, L"db\\");
+	lstrcatW(csvPath, csvName);
+	
+	// Default fallback
+	lstrcpynW(outBuffer, L"Unknown", maxLen);
+	
+	// Open file using Win32 API
+	HANDLE hFile = CreateFileW(csvPath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE) return;
+	
+	DWORD fileSize = GetFileSize(hFile, NULL);
+	if (fileSize > 0 && fileSize < 1024 * 256) { // 256KB limit for safety
+		HANDLE hHeap = GetProcessHeap();
+		char* buffer = (char*)HeapAlloc(hHeap, HEAP_ZERO_MEMORY, fileSize + 1);
+		DWORD bytesRead;
+		
+		if (buffer && ReadFile(hFile, buffer, fileSize, &bytesRead, NULL)) {
+			// Convert searchId to ANSI for comparison against CSV content
+			char targetA[8];
+			WideCharToMultiByte(CP_ACP, 0, searchId, -1, targetA, 8, NULL, NULL);
+			
+			char* ptr = buffer;
+			char* end = buffer + fileSize;
+			
+			while (ptr < end) {
+				// Check if current line starts with the ID
+				BOOL match = TRUE;
+				for (int i = 0; i < 4; i++) {
+					if (ptr + i >= end || ptr[i] != targetA[i]) {
+						match = FALSE;
+						break;
+					}
+				}
+				
+				if (match && ptr[4] == ',') {
+					char* valStart = ptr + 5;
+					char* valEnd = valStart;
+					
+					// Find end of the line
+					while (valEnd < end && *valEnd != '\r' && *valEnd != '\n') {
+						valEnd++;
+					}
+					
+					int valLen = (int)(valEnd - valStart);
+					if (valLen > 0) {
+						// Convert value from UTF-8/ANSI back to WCHAR outBuffer
+						MultiByteToWideChar(CP_UTF8, 0, valStart, valLen, outBuffer, maxLen);
+						outBuffer[min(valLen, maxLen - 1)] = L'\0';
+					}
+					break;
+				}
+				
+				// Move to next line
+				while (ptr < end && *ptr != '\n') ptr++;
+				ptr++;
+			}
+		}
+		if (buffer) HeapFree(hHeap, 0, buffer);
+	}
+	CloseHandle(hFile);
+}
+
 BOOL ProbeBoardAndRam(HW_REPORT* report) {
 	// Get table size
 	DWORD bufSize = GetSystemFirmwareTable(signature, 0, NULL, 0);
@@ -131,14 +198,18 @@ BOOL ProbeBoardAndRam(HW_REPORT* report) {
 		if (type == 0) {
 			Internal_GetSmbiosString(pData, pData[5], report->Board.BiosVersion, 32);
 		}
+		// System model info
+		else if (type==1){
+			Internal_GetSmbiosString(pData, pData[5], report->Board.SystemName, 64);
+		}
 		// Motherboard info
 		else if (type == 2) {
 			Internal_GetSmbiosString(pData, pData[4], report->Board.Manufacturer, 64);
 			Internal_GetSmbiosString(pData, pData[5], report->Board.Model, 64);
 			// Default value for chipset if not fetched
-			lstrcpyW(report->Board.ChipSet, L"Not mapped yet");
 			lstrcpyW(report->Board.ChipsetID, L"Unknown"); 
 			Internal_GetPciChipsetId(report->Board.ChipsetID, 16);
+			Internal_MapIdNative(L"iChipset.csv", report->Board.ChipsetID, report->Board.ChipsetName, 128);
 		}
 		// Memory info
 		else if (type == 17) {
@@ -183,8 +254,6 @@ BOOL ProbeBoardAndRam(HW_REPORT* report) {
 			
 		}
 		
-		// Handle other types
-		else if (type == 2) { /* ... */ }
 		
 		// Move the pointer
 		pData += length; // Skip the formatted zone, indicated by length
