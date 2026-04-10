@@ -33,7 +33,7 @@ SubVendor: PALIT
 
 [Monitors] Count: 1
 Monitor 1: Philips 27M2N5810 [PHLC32C] (2024)
-  Resolution: 1920 x 1080 (Virtual/Standard)
+  Resolution: 3840 x 2160 (Virtual/Standard)
   Physical Size: 27.1 Inch
 
 [Storage] Count: 2
