@@ -50,52 +50,6 @@ static float GetMonitorSizeByInstance(const WCHAR* instanceName) {
 	return 0.0f;
 }
 
-//static float GetPhysicalSizeFromRegistry() {
-//	HKEY hKey;
-//	// Walk through the Display Enum
-//	if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Enum\\DISPLAY", 0, KEY_READ, &hKey) != ERROR_SUCCESS)
-//		return 0.0f;
-//	
-//	WCHAR monitorKey[256];
-//	DWORD keyIdx = 0;
-//	float largestDiagonal = 0.0f;
-//	
-//	// Loop through monitor hardware IDs
-//	while (RegEnumKeyW(hKey, keyIdx++, monitorKey, 256) == ERROR_SUCCESS) {
-//		HKEY hSubKey;
-//		if (RegOpenKeyExW(hKey, monitorKey, 0, KEY_READ, &hSubKey) != ERROR_SUCCESS) continue;
-//		
-//		WCHAR instanceKey[256];
-//		DWORD instIdx = 0;
-//		// Loop through instances
-//		while (RegEnumKeyW(hSubKey, instIdx++, instanceKey, 256) == ERROR_SUCCESS) {
-//			HKEY hParamKey;
-//			WCHAR path[512];
-//			wsprintfW(path, L"%s\\Device Parameters", instanceKey);
-//			
-//			if (RegOpenKeyExW(hSubKey, path, 0, KEY_READ, &hParamKey) == ERROR_SUCCESS) {
-//				BYTE edid[256];
-//				DWORD cbEdid = sizeof(edid);
-//				if (RegQueryValueExW(hParamKey, L"EDID", NULL, NULL, edid, &cbEdid) == ERROR_SUCCESS) {
-//					// EDID block is at least 128 bytes
-//					if (cbEdid >= 128) {
-//						int cmH = edid[21];
-//						int cmV = edid[22];
-//						
-//						if (cmH > 0 && cmV > 0) {
-//							float diag = (float)(sqrt((double)cmH * cmH + (double)cmV * cmV) / 2.54);
-//							if (diag > largestDiagonal) largestDiagonal = diag;
-//						}
-//					}
-//				}
-//				RegCloseKey(hParamKey);
-//			}
-//		}
-//		RegCloseKey(hSubKey);
-//	}
-//	RegCloseKey(hKey);
-//	return largestDiagonal;
-//}
 
 typedef struct {
 	const WCHAR* id;
@@ -179,7 +133,6 @@ void ProbeMonitorsWMI(HW_REPORT* report) {
 			}
 		}
 		
-//		mon->Diagonal = GetPhysicalSizeFromRegistry();
 		VARIANT varInstance;
 		VariantInit(&varInstance);
 		

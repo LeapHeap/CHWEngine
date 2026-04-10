@@ -5,7 +5,7 @@
 #include <wchar.h>
 #include "CHWEngine.h"
 #include "PCIProbe.h"
-#include "BoardProbe.h" // For the mapper function
+#include "Utils.h"
 
 #include <dxgi.h>
 void Internal_GetVramViaDXGI(GPU_INFO* gpu) {
@@ -60,14 +60,7 @@ static void Internal_ParsePciId(const WCHAR* hwId, WORD* venId, WORD* devId, WOR
 	}
 }
 
-void Internal_IntToHexW(WORD val, WCHAR* outStr) {
-	const WCHAR* hexChars = L"0123456789ABCDEF";
-	outStr[0] = hexChars[(val >> 12) & 0xF];
-	outStr[1] = hexChars[(val >> 8) & 0xF];
-	outStr[2] = hexChars[(val >> 4) & 0xF];
-	outStr[3] = hexChars[val & 0xF];
-	outStr[4] = L'\0';
-}
+
 
 /* * Generic PCI scanner engine
 * Handles memory offset calculation for different struct types in HW_REPORT
@@ -85,14 +78,14 @@ static int Internal_ScanPciBus(const GUID* classGuid, void* targetArray, int max
 	for (DWORD i = 0; SetupDiEnumDeviceInfo(hDevInfo, i, &devData) && foundCount < maxCount; i++) {
 		WCHAR hwIdList[1024] = {0};
 		
-		// Step 1: Get the Hardware ID for parsing VEN/DEV IDs
+		// Get the Hardware ID for parsing VEN/DEV IDs
 		if (SetupDiGetDeviceRegistryPropertyW(hDevInfo, &devData, SPDRP_HARDWAREID, 
 											  NULL, (PBYTE)hwIdList, sizeof(hwIdList), NULL)) {
 			
 			// Calculate memory address for the current array element
 			BYTE* currentEntry = (BYTE*)targetArray + (foundCount * structSize);
 			
-			// Step 2: Extract common ID and Model Name based on hardware type
+			// Extract common ID and Model Name based on hardware type
 			if (type == 0) { // GPU_INFO
 				GPU_INFO* gpu = (GPU_INFO*)currentEntry;
 				Internal_ParsePciId(hwIdList, &gpu->VenID, &gpu->DevID, &gpu->SubVenID, &gpu->SubDevID);
