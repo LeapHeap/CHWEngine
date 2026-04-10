@@ -77,14 +77,14 @@ Build = 0
 LanguageID = 1033
 CharsetID = 1252
 CompanyName = LeapHeap
-FileVersion = 0.1
-FileDescription = Hardware Detection Engine
+FileVersion = 
+FileDescription = Hardware Information Engine
 InternalName = 
 LegalCopyright = (C) 2026 LeapHeap
 LegalTrademarks = 
 OriginalFilename = CHWEngine.dll
 ProductName = CHWEngine
-ProductVersion = 0.1.1.1
+ProductVersion = 
 AutoIncBuildNr = 0
 SyncProduct = 1
 

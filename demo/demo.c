@@ -18,7 +18,7 @@ void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 	WriteFile(hFile, &bom, sizeof(bom), &written, NULL);
 	
 	// Board info
-	len = wsprintfW(buf, L"--- CHWBox Hardware Report ---\r\n\r\n"
+	len = wsprintfW(buf, L"--- CHWEngine Hardware Report ---\r\n\r\n"
 					L"[Motherboard]\r\n"
 					L"Manufacturer: %s\r\n"
 					L"SystemName: %s\r\n"
@@ -233,6 +233,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SaveReportToFile(&report, L"Report.txt");
 	
 	
-	MessageBoxW(NULL, L"Hardware detection complete. Report saved to Report.txt", L"CHWBox", MB_OK);
+	MessageBoxW(NULL, L"Hardware detection complete. Report saved to Report.txt", L"CHWBox Demo", MB_OK);
 	return 0;
 }
