@@ -52,6 +52,8 @@ typedef struct {
 	int CurWidth;
 	int CurHeight;
 	
+	WCHAR DeviceName[64];
+	WCHAR VendorName[64];
 	WCHAR MonitorName[128];  // Friendly name, e.g. "27M2N5810"
 	WCHAR VendorID[8];       // VendorID "PHL"
 	WCHAR ProductID[16];

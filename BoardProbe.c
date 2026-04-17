@@ -2,6 +2,7 @@
 #include "CHWEngine.h"
 #include "BoardProbe.h"
 #include "Utils.h"
+#include "resource.h"
 #include <setupapi.h>
 #include <devguid.h>
 
@@ -144,7 +145,7 @@ BOOL ProbeBoardAndRam(HW_REPORT* report) {
 			// Default value for chipset if not fetched
 			lstrcpyW(report->Board.ChipsetID, L"Unknown"); 
 			Internal_GetPciChipsetId(report->Board.ChipsetID, 16);
-			Internal_MapIdNative(L"iChipset.csv", report->Board.ChipsetID, report->Board.ChipsetName, 128);
+			Internal_MapIdFromResource(IDR_CSV_CHIPSET, report->Board.ChipsetID, report->Board.ChipsetName, 128);
 		}
 		// Memory info
 		else if (type == 17) {

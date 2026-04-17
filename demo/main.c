@@ -1,6 +1,10 @@
 #include <windows.h>
 #include "../CHWEngine.h"
 
+//#define PROBMONWMI
+#define PROBMON
+
+
 double elapsedMilliseconds;
 
 void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
@@ -100,7 +104,6 @@ void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 	for (int i = 0; i < report->MonitorCount; i++) {
 		MONITOR_INFO* m = &report->Monitors[i];
 		
-		const WCHAR* vendorName = GetVendorFullName(m->VendorID);
 		
 		// Float to string conversion
 		int dWhole = (int)m->Diagonal;
@@ -111,7 +114,7 @@ void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 		// Example: Philips 27M2N5810 [PHLC32C] (2024)
 		len = wsprintfW(buf, L"Monitor %d: %s %s [%s%s] (%d)\r\n", 
 						i + 1, 
-						vendorName, 
+						m->VendorName, 
 						m->MonitorName[0] ? m->MonitorName : L"Generic", 
 						m->VendorID,    // "PHL"
 						m->ProductID,   // "C32C"
@@ -218,10 +221,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ProbeCpu(&report);
 	ProbeGpus(&report);
 	ProbeBoardAndRam(&report);
-	ProbeAudios(&report);
 	ProbeNics(&report);
 	ProbeDisks(&report);
+
+#ifdef PROBMONWMI
 	ProbeMonitorsWMI(&report);
+#endif
+#ifdef PROBMON
+	ProbeMonitors(&report);
+#endif
 	ProbeAudio(&report);
 	
 	// 3. End Timer
@@ -236,3 +244,4 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MessageBoxW(NULL, L"Hardware detection complete. Report saved to Report.txt", L"CHWBox Demo", MB_OK);
 	return 0;
 }
+

@@ -4,7 +4,7 @@
 #include <windows.h>
 #include "CHWEngine.h"
 
-DLLIMPORT const WCHAR* GetVendorFullName(const WCHAR* pnpId);
+//DLLIMPORT const WCHAR* GetVendorFullName(const WCHAR* pnpId);
 DLLIMPORT void ProbeMonitorsWMI(HW_REPORT* report);
-
+DLLIMPORT void ProbeMonitors(HW_REPORT* report);
 #endif

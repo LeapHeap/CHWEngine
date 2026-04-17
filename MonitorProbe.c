@@ -4,6 +4,8 @@
 #include <wbemidl.h>
 #include <math.h>
 #include "CHWEngine.h"
+#include "Utils.h"
+#include "resource.h"
 
 static void WmiArrayToWchar(VARIANT* v, WCHAR* dest, int maxLen) {
 	long lBound, uBound;
@@ -51,25 +53,8 @@ static float GetMonitorSizeByInstance(const WCHAR* instanceName) {
 }
 
 
-typedef struct {
-	const WCHAR* id;
-	const WCHAR* name;
-} VENDOR_MAP;
-
-static const VENDOR_MAP g_VendorMap[] = {
-	{ L"PHL", L"Philips" }, { L"SAM", L"Samsung" }, { L"GSM", L"LG" },
-	{ L"DEL", L"Dell" },    { L"AOC", L"AOC" },     { L"BEN", L"BenQ" },
-	{ L"ASU", L"ASUS" },    { L"MSI", L"MSI" },     { L"LEN", L"Lenovo" },
-	{ L"HPN", L"HP" },      { L"ACI", L"ASUS" },    { L"SEC", L"Samsung" },
-	{ L"BOE", L"BOE" },     { L"HKC", L"HKC" },     { L"GIG", L"Gigabyte" }
-};
-
-const WCHAR* GetVendorFullName(const WCHAR* pnpId) {
-	if (!pnpId || pnpId[0] == L'\0') return L"Unknown";
-	for (int i = 0; i < sizeof(g_VendorMap) / sizeof(VENDOR_MAP); i++) {
-		if (wcsncmp(pnpId, g_VendorMap[i].id, 3) == 0) return g_VendorMap[i].name;
-	}
-	return pnpId; // Fallback to raw ID if not in map
+void Internal_ResolveVendorName(const WCHAR* vendorId, WCHAR* outName, int maxLen) {
+	Internal_MapIdFromResource(IDR_CSV_MONITORS, vendorId, outName, maxLen);
 }
 
 void ProbeMonitorsWMI(HW_REPORT* report) {
@@ -106,6 +91,8 @@ void ProbeMonitorsWMI(HW_REPORT* report) {
 		if (SUCCEEDED(pclsObj->lpVtbl->Get(pclsObj, L"ManufacturerName", 0, &vtProp, 0, 0))) {
 			WmiArrayToWchar(&vtProp, mon->VendorID, 16); // e.g. "PHL"
 			VariantClear(&vtProp);
+			//lstrcpyW(mon->VendorName,GetVendorFullName(mon->VendorID));
+			Internal_ResolveVendorName(mon->VendorID,mon->VendorName,64);
 		}
 		
 		if (SUCCEEDED(pclsObj->lpVtbl->Get(pclsObj, L"ProductCodeID", 0, &vtProp, 0, 0))) {
@@ -162,5 +149,65 @@ void ProbeMonitorsWMI(HW_REPORT* report) {
 	pEnumerator->lpVtbl->Release(pEnumerator);
 	pSvc->lpVtbl->Release(pSvc);
 	pLoc->lpVtbl->Release(pLoc);
+	report->MonitorCount = idx;
+}
+
+void ProbeMonitors(HW_REPORT* report) {
+	DISPLAY_DEVICEW ddAdapter = { sizeof(ddAdapter) };
+	int idx = 0;
+	
+	// 1. Enumerate Display Adapters (Video Cards)
+	// Note: We follow the idx logic to match your front-end array
+	for (int i = 0; EnumDisplayDevicesW(NULL, i, &ddAdapter, 0) && idx < 4; i++) {
+		// Only focus on adapters that are part of the desktop
+		if (!(ddAdapter.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP)) 
+			continue;
+		
+		DISPLAY_DEVICEW ddMon = { sizeof(ddMon) };
+		int monIndex = 0;
+		
+		// 2. Enumerate Monitors attached to this Adapter
+		while (EnumDisplayDevicesW(ddAdapter.DeviceName, monIndex, &ddMon, 0)) {
+			if (ddMon.StateFlags & DISPLAY_DEVICE_ACTIVE) {
+				MONITOR_INFO* mon = &report->Monitors[idx];
+				
+				// --- 3. Extract VendorID from DeviceID (e.g., "MONITOR\PHL...") ---
+				// Format is usually MONITOR\PNPID\Instance
+				WCHAR* pIdStart = wcschr(ddMon.DeviceID, L'\\');
+				if (pIdStart) {
+					pIdStart++; 
+					wcsncpy(mon->VendorID, pIdStart, 3);
+					mon->VendorID[3] = L'\0';
+					
+					// Use the same internal mapping as your WMI version
+					Internal_ResolveVendorName(mon->VendorID, mon->VendorName, 64);
+				}
+				
+				// --- 4. Get Monitor Friendly Name ---
+				// WMI uses "UserFriendlyName", EnumDisplayDevices uses "DeviceString"
+				lstrcpynW(mon->MonitorName, ddMon.DeviceString, 128);
+				
+				// --- 5. Grab Current Resolution ---
+				// This replaces the EnumDisplaySettingsW call in your WMI version
+				DEVMODEW dm = { sizeof(dm) };
+				if (EnumDisplaySettingsW(ddAdapter.DeviceName, ENUM_CURRENT_SETTINGS, &dm)) {
+					mon->CurWidth = dm.dmPelsWidth;
+					mon->CurHeight = dm.dmPelsHeight;
+				}
+				
+				// --- 6. Set Default Values for HW-only fields ---
+				// These fields (Year, Diagonal) require EDID/WMI, so we clear them in Fast Path
+				mon->Year = 0;
+				mon->Diagonal = 0.0f; 
+				mon->ProductID[0] = L'\0'; 
+				
+				idx++;
+				if (idx >= 4) break; // Array boundary check
+			}
+			monIndex++;
+		}
+	}
+	
+	// Assign total count to report to match front-end expectation
 	report->MonitorCount = idx;
 }

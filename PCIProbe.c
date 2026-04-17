@@ -6,7 +6,7 @@
 #include "CHWEngine.h"
 #include "PCIProbe.h"
 #include "Utils.h"
-
+#include "resource.h"
 #include <dxgi.h>
 void Internal_GetVramViaDXGI(GPU_INFO* gpu) {
 	IDXGIFactory* pFactory = NULL;
@@ -92,7 +92,7 @@ static int Internal_ScanPciBus(const GUID* classGuid, void* targetArray, int max
 				WCHAR subVenStr[5];
 				Internal_IntToHexW(gpu->SubVenID, subVenStr);
 				// SubVenID mapper
-				Internal_MapIdNative(L"Graphics.csv",subVenStr,gpu->SubVendor,128);
+				Internal_MapIdFromResource(IDR_CSV_GRAPHICS,subVenStr,gpu->SubVendor,128);
 				SetupDiGetDeviceRegistryPropertyW(hDevInfo, &devData, SPDRP_DEVICEDESC, 
 												  NULL, (PBYTE)gpu->Model, sizeof(gpu->Model), NULL);
 				gpu->VRAMSizeBytes = 0;
@@ -125,11 +125,6 @@ BOOL ProbeGpus(HW_REPORT* report) {
 	return (report->GpuCount > 0);
 }
 
-BOOL ProbeAudios(HW_REPORT* report) {
-	// Media GUID includes sound cards and some encoders
-	report->AudioCount = Internal_ScanPciBus(&GUID_DEVCLASS_MEDIA, report->Audios, 8, sizeof(AUDIO_INFO), 1);
-	return (report->AudioCount > 0);
-}
 
 BOOL ProbeNics(HW_REPORT* report) {
 	// Net GUID for Ethernet, WiFi and Bluetooth adapters
