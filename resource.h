@@ -5,3 +5,4 @@
 #define IDR_CSV_GRAPHICS                        107
 #define IDR_CSV_CHIPSET                         109
 #define IDR_CSV_MONITORS                        111
+#define IDR_CSV_MEMTYPE                         113

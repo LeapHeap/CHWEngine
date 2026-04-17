@@ -30,24 +30,11 @@ static void Internal_GetSmbiosString(BYTE* pStructStart, BYTE index, WCHAR* outB
 	MultiByteToWideChar(CP_ACP, 0, pCurrentStr, -1, outBuf, maxLen);
 }
 
-static void Internal_MapMemoryType(BYTE typeByte, WCHAR* outBuf) {
-	switch (typeByte) {
-		case 18: lstrcpyW(outBuf, L"DDR"); break;
-		case 19: 
-		case 20: lstrcpyW(outBuf, L"DDR2"); break;
-		case 24: lstrcpyW(outBuf, L"DDR3"); break;
-		case 25: lstrcpyW(outBuf, L"FBD2"); break;
-		case 26: lstrcpyW(outBuf, L"DDR4"); break;
-		case 27: lstrcpyW(outBuf, L"LPDDR"); break;
-		case 28: lstrcpyW(outBuf, L"LPDDR2"); break;
-		case 29: lstrcpyW(outBuf, L"LPDDR3"); break;
-		case 30: lstrcpyW(outBuf, L"LPDDR4"); break;
-		case 32: lstrcpyW(outBuf, L"HBM"); break;
-		case 33: lstrcpyW(outBuf, L"HBM2"); break;
-		case 34: lstrcpyW(outBuf, L"DDR5"); break;
-		case 35: lstrcpyW(outBuf, L"LPDDR5"); break;
-		default: lstrcpyW(outBuf, L"DDRx"); break;
-	}
+WCHAR* IntToWchar(BYTE val) {
+	static WCHAR buffer[16]; 
+	// Convert number 34 to L"34"
+	wsprintfW(buffer, L"%u", (UINT)val); 
+	return buffer;
 }
 
 static void Internal_GetPciChipsetId(WCHAR* outId, int maxLen) {
@@ -167,7 +154,7 @@ BOOL ProbeBoardAndRam(HW_REPORT* report) {
 				
 				// Identify memory type
 				BYTE mType = pData[0x12]; // 0x12 as memory type offset
-				Internal_MapMemoryType(mType, ram->Type);
+				Internal_MapIdFromResource(IDR_CSV_MEMTYPE,IntToWchar(mType),ram->Type,16);
 				// Print raw data if not matched
 				if (lstrcmpW(ram->Type, L"DDRx") == 0) {
 					wsprintfW(ram->Type, L"Unknown(0x%02X)", mType);

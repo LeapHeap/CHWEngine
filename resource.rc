@@ -20,3 +20,7 @@ IDR_CSV_GRAPHICS   RCDATA         ".\\db\\Graphics.csv"
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDR_CSV_MONITORS   RCDATA         ".\\db\\Monitors.csv"
+
+
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+IDR_CSV_MEMTYPE    RCDATA         ".\\db\\MemType.csv"
