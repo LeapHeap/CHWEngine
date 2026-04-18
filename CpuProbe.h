@@ -4,6 +4,6 @@
 #include <windows.h>
 #include "CHWEngine.h"
 
-DLLIMPORT void ProbeCpu(HW_REPORT* report);
+DLLIMPORT void ProbeCpus(HW_REPORT* report);
 
 #endif

@@ -133,7 +133,7 @@ BOOL ProbeBoardAndRam(HW_REPORT* report) {
 			Internal_GetSmbiosString(pData, pData[4], report->Board.Manufacturer, 64);
 			Internal_GetSmbiosString(pData, pData[5], report->Board.Model, 64);
 			// Default value for chipset if not fetched
-			lstrcpyW(report->Board.ChipsetID, L"Unknown"); 
+			lstrcpynW(report->Board.ChipsetID, L"Unknown",_countof(report->Board.ChipsetID)); 
 			Internal_GetPciChipsetId(report->Board.ChipsetID, 16);
 			Internal_MapIdFromResource(IDR_CSV_CHIPSET, report->Board.ChipsetID, report->Board.ChipsetName, 128);
 		}

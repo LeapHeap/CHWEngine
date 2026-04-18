@@ -5,7 +5,7 @@
 #include "CpuProbe.h"
 
 
-void ProbeCpu(HW_REPORT* report) {
+void ProbeCpus(HW_REPORT* report) {
 	report->CpuCount = 0;
 	DWORD bufferSize = 0;
 	

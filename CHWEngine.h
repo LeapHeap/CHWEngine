@@ -105,4 +105,21 @@ typedef struct {
 #include "MonitorProbe.h"
 #include "PCIProbe.h"
 
+
+#define HW_STR_FIELDS \
+X(Cpu,Model,Model) \
+//X(Board,Make,Manufacturer) \
+//X(Board,SysName,SystemName) \
+//X(Board,Model,Model) \
+//X(Board,ChipsetName,ChipsetName) \
+//X(Board,BiosVer,BiosVersion) \
+//X(Ram,Make,Manufacturer) \
+//X(Ram,Type,Type)
+
+#define HW_COUNT_FIELDS \
+X(Cpu) \
+//X(Ram)
+
+#include "CHWInterface.h"
+
 #endif

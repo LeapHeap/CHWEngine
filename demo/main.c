@@ -218,7 +218,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	QueryPerformanceCounter(&start);
 	
 	// Call
-	ProbeCpu(&report);
+	ProbeCpus(&report);
 	ProbeGpus(&report);
 	ProbeBoardAndRam(&report);
 	ProbeNics(&report);
@@ -230,7 +230,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #ifdef PROBMON
 	ProbeMonitors(&report);
 #endif
-	ProbeAudio(&report);
+	ProbeAudios(&report);
 	
 	// 3. End Timer
 	QueryPerformanceCounter(&end);

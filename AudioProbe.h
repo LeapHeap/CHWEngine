@@ -3,6 +3,6 @@
 
 #include "CHWEngine.h"
 
-DLLIMPORT void ProbeAudio(HW_REPORT* report);
+DLLIMPORT void ProbeAudios(HW_REPORT* report);
 
 #endif

@@ -4,7 +4,7 @@
 #include <devguid.h>
 #include "CHWEngine.h"
 
-void ProbeAudio(HW_REPORT* report) {
+void ProbeAudios(HW_REPORT* report) {
 	report->AudioCount = 0;
 	static const GUID MediaClassGuid = { 0x4d36e96c, 0xe325, 0x11ce, { 0xbf, 0xc1, 0x08, 0x00, 0x2b, 0xe1, 0x03, 0x18 } };
 	
