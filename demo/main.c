@@ -22,17 +22,21 @@ void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 	WriteFile(hFile, &bom, sizeof(bom), &written, NULL);
 	
 	// Board info
-	len = wsprintfW(buf, L"--- CHWEngine Hardware Report ---\r\n\r\n"
-					L"[Motherboard]\r\n"
-					L"Manufacturer: %s\r\n"
-					L"SystemName: %s\r\n"
-					L"Model: %s\r\n"
-					L"ChipsetName: %s\r\n"
-					L"ChipsetID: %s\r\n"
-					L"BIOS: %s\r\n\r\n",
-					report->Board.Manufacturer, report->Board.SystemName, report->Board.Model, 
-					report->Board.ChipsetName, report->Board.ChipsetID, report->Board.BiosVersion);
-	WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
+	for (int i=0; i< report->BoardCount; i++){
+		BOARD_INFO* board = &report->Boards[i];
+		len = wsprintfW(buf, L"--- CHWEngine Hardware Report ---\r\n\r\n"
+						L"[Motherboard]\r\n"
+						L"Manufacturer: %s\r\n"
+						L"SystemName: %s\r\n"
+						L"Model: %s\r\n"
+						L"ChipsetName: %s\r\n"
+						L"ChipsetID: %s\r\n"
+						L"BIOS: %s\r\n\r\n",
+						board->Manufacturer, board->SystemName, board->Model, 
+						board->ChipsetName, board->ChipsetID, board->BiosVersion);
+		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
+	}
+	
 	
 	// CPU info
 	len = wsprintfW(buf, L"[Processor Information] Count: %d\r\n", report->CpuCount);
@@ -220,7 +224,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// Call
 	ProbeCpus(&report);
 	ProbeGpus(&report);
-	ProbeBoardAndRam(&report);
+	ProbeBoardsAndRams(&report);
 	ProbeNics(&report);
 	ProbeDisks(&report);
 

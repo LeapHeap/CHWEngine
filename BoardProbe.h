@@ -4,6 +4,6 @@
 #include <windows.h>
 #include "CHWEngine.h"
 
-DLLIMPORT BOOL ProbeBoardAndRam(HW_REPORT* report);
+DLLIMPORT BOOL ProbeBoardsAndRams(HW_REPORT* report);
 
 #endif

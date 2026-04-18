@@ -73,9 +73,9 @@ typedef struct {
 } NIC_INFO;
 
 typedef struct {
-	BOARD_INFO Board;
+	BOARD_INFO Boards[2];
+	int BoardCount;
 	
-	// Enumed devices
 	CPU_INFO Cpus[4];
 	int CpuCount;
 	
@@ -107,18 +107,18 @@ typedef struct {
 
 
 #define HW_STR_FIELDS \
-X(Cpu,Model,Model,s) \
-X(Board,Make,Manufacturer, ) \
-X(Board,SysName,SystemName, ) \
-X(Board,Model,Model, ) \
-X(Board,ChipsetName,ChipsetName, ) \
-X(Board,BiosVer,BiosVersion, ) \
-X(Ram,Make,Manufacturer, ) \
-X(Ram,Type,Type, )
+X(Cpu,Model,Model) \
+X(Board,Make,Manufacturer) \
+X(Board,SysName,SystemName) \
+X(Board,Model,Model) \
+X(Board,ChipsetName,ChipsetName) \
+X(Board,BiosVer,BiosVersion) \
+X(Ram,Make,Manufacturer) \
+X(Ram,Type,Type)
 
 #define HW_COUNT_FIELDS \
-X(Cpu,s) \
-X(Ram,s)
+X(Cpu) \
+X(Ram)
 
 #include "CHWInterface.h"
 

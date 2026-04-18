@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <wchar.h>
 
-#define DEFINE_HW_STR_GETTER(hwName, name, member, PluralSuffix) \
+#define DEFINE_HW_STR_GETTER(hwName, name, member) \
 DLLIMPORT void Get##hwName##name(int index, LPWSTR buffer, int maxLen) { \
 if (buffer == NULL || maxLen <= 0) return; \
 if (!g_Status.hwName) { \
-Probe##hwName##PluralSuffix(&g_Cache); \
+Probe##hwName##s(&g_Cache); \
 g_Status.hwName = TRUE; \
 } \
 if (index >= 0 && index < g_Cache.hwName##Count) { \
@@ -16,10 +16,10 @@ buffer[0] = L'\0'; \
 } \
 }
 
-#define DEFINE_HW_COUNT_GETTER(hwName,PluralSuffix) \
+#define DEFINE_HW_COUNT_GETTER(hwName) \
 DLLIMPORT int Get##hwName##Count() { \
 if (!g_Status.hwName) { \
-Probe##hwName##PluralSuffix(&g_Cache); \
+Probe##hwName##s(&g_Cache); \
 g_Status.hwName = TRUE; \
 } \
 return g_Cache.hwName##Count; \
@@ -58,14 +58,14 @@ static struct {
 //	return g_Cache.CpuCount;
 //}
 
-static void ProbeBoard(HW_REPORT* cache) { ProbeBoardAndRam(cache); }
-static void ProbeRams(HW_REPORT* cache)   { ProbeBoardAndRam(cache); }
+static void ProbeBoards(HW_REPORT* cache) { ProbeBoardsAndRams(cache); }
+static void ProbeRams(HW_REPORT* cache)   { ProbeBoardsAndRams(cache); }
 
-#define X(hw,name,mem,suff) DEFINE_HW_STR_GETTER(hw,name,mem,suff)
+#define X(hw,name,mem) DEFINE_HW_STR_GETTER(hw,name,mem)
 HW_STR_FIELDS
 #undef X
 
-#define X(hw,suff) DEFINE_HW_COUNT_GETTER(hw,suff)
+#define X(hw) DEFINE_HW_COUNT_GETTER(hw)
 HW_COUNT_FIELDS
 #undef X
 

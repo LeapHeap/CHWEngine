@@ -10,11 +10,11 @@ DLLIMPORT void Get##hwName##name(int index, LPWSTR buffer, int maxLen);
 #define DECLARE_HW_COUNT_GETTER(hwName) \
 DLLIMPORT int Get##hwName##Count();
 
-#define X(hw,name,mem,suff) DECLARE_HW_STR_GETTER(hw,name)
+#define X(hw,name,mem) DECLARE_HW_STR_GETTER(hw,name)
 HW_STR_FIELDS
 #undef X
 
-#define X(hw,suff) DECLARE_HW_COUNT_GETTER(hw)
+#define X(hw) DECLARE_HW_COUNT_GETTER(hw)
 HW_COUNT_FIELDS
 #undef X
 

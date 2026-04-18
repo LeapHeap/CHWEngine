@@ -97,7 +97,7 @@ static void Internal_GetPciChipsetId(WCHAR* outId, int maxLen) {
 }
 
 
-BOOL ProbeBoardAndRam(HW_REPORT* report) {
+BOOL ProbeBoardsAndRams(HW_REPORT* report) {
 	// Get table size
 	DWORD bufSize = GetSystemFirmwareTable(signature, 0, NULL, 0);
 	if (bufSize == 0) return FALSE;
@@ -115,27 +115,31 @@ BOOL ProbeBoardAndRam(HW_REPORT* report) {
 	BYTE* pEnd = pData + tableLen;
 	
 	report->RamCount = 0;
+	report->BoardCount = 0;
 	
 	while (pData < pEnd && pData[0] != 127) { // 127 as the end of table
 		BYTE type = pData[0];
 		BYTE length = pData[1];
 		
+		BOARD_INFO* board = &report->Boards[report->BoardCount];
+		
 		// BIOS info
 		if (type == 0) {
-			Internal_GetSmbiosString(pData, pData[5], report->Board.BiosVersion, 32);
+			Internal_GetSmbiosString(pData, pData[5], board->BiosVersion, 32);
 		}
 		// System model info
 		else if (type==1){
-			Internal_GetSmbiosString(pData, pData[5], report->Board.SystemName, 64);
+			Internal_GetSmbiosString(pData, pData[5], board->SystemName, 64);
 		}
 		// Motherboard info
 		else if (type == 2) {
-			Internal_GetSmbiosString(pData, pData[4], report->Board.Manufacturer, 64);
-			Internal_GetSmbiosString(pData, pData[5], report->Board.Model, 64);
+			Internal_GetSmbiosString(pData, pData[4], board->Manufacturer, 64);
+			Internal_GetSmbiosString(pData, pData[5], board->Model, 64);
 			// Default value for chipset if not fetched
-			lstrcpynW(report->Board.ChipsetID, L"Unknown",_countof(report->Board.ChipsetID)); 
-			Internal_GetPciChipsetId(report->Board.ChipsetID, 16);
-			Internal_MapIdFromResource(IDR_CSV_CHIPSET, report->Board.ChipsetID, report->Board.ChipsetName, 128);
+			lstrcpynW(board->ChipsetID, L"Unknown",_countof(board->ChipsetID)); 
+			Internal_GetPciChipsetId(board->ChipsetID, 16);
+			Internal_MapIdFromResource(IDR_CSV_CHIPSET, board->ChipsetID, board->ChipsetName, 128);
+			report->BoardCount++;
 		}
 		// Memory info
 		else if (type == 17) {
