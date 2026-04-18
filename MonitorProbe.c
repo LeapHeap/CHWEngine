@@ -92,14 +92,14 @@ void ProbeMonitorsWMI(HW_REPORT* report) {
 		VARIANT vtProp;
 		
 		if (SUCCEEDED(pclsObj->lpVtbl->Get(pclsObj, L"ManufacturerName", 0, &vtProp, 0, 0))) {
-			WmiArrayToWchar(&vtProp, mon->VendorID, 16); // e.g. "PHL"
+			WmiArrayToWchar(&vtProp, mon->VendorId, 16); // e.g. "PHL"
 			VariantClear(&vtProp);
 			//lstrcpyW(mon->VendorName,GetVendorFullName(mon->VendorID));
-			Internal_ResolveVendorName(mon->VendorID,mon->VendorName,64);
+			Internal_ResolveVendorName(mon->VendorId,mon->VendorName,64);
 		}
 		
 		if (SUCCEEDED(pclsObj->lpVtbl->Get(pclsObj, L"ProductCodeID", 0, &vtProp, 0, 0))) {
-			WmiArrayToWchar(&vtProp, mon->ProductID, 16); // e.g. "C32C"
+			WmiArrayToWchar(&vtProp, mon->ProductId, 16); // e.g. "C32C"
 			VariantClear(&vtProp);
 		}
 		
@@ -179,11 +179,11 @@ void ProbeMonitors(HW_REPORT* report) {
 				WCHAR* pIdStart = wcschr(ddMon.DeviceID, L'\\');
 				if (pIdStart) {
 					pIdStart++; 
-					wcsncpy(mon->VendorID, pIdStart, 3);
-					mon->VendorID[3] = L'\0';
+					wcsncpy(mon->VendorId, pIdStart, 3);
+					mon->VendorId[3] = L'\0';
 					
 					// Use the same internal mapping as your WMI version
-					Internal_ResolveVendorName(mon->VendorID, mon->VendorName, _countof(mon->VendorName));
+					Internal_ResolveVendorName(mon->VendorId, mon->VendorName, _countof(mon->VendorName));
 				}
 				
 				// --- 4. Get Monitor Friendly Name ---
@@ -202,7 +202,7 @@ void ProbeMonitors(HW_REPORT* report) {
 				// These fields (Year, Diagonal) require EDID/WMI, so we clear them in Fast Path
 				mon->Year = 0;
 				mon->Diagonal = 0.0f; 
-				mon->ProductID[0] = L'\0'; 
+				mon->ProductId[0] = L'\0'; 
 				
 				idx++;
 				if (idx >= 4) break; // Array boundary check

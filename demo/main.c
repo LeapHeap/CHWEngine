@@ -33,7 +33,7 @@ void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 						L"ChipsetID: %s\r\n"
 						L"BIOS: %s\r\n\r\n",
 						board->Manufacturer, board->SystemName, board->Model, 
-						board->ChipsetName, board->ChipsetID, board->BiosVersion);
+						board->ChipsetName, board->ChipsetId, board->BiosVersion);
 		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
 	}
 	
@@ -64,7 +64,7 @@ void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 	for (int i = 0; i < report->RamCount; i++) {
 		len = wsprintfW(buf, L"Slot %d: %s | %s | %u MB | %u MT/s\r\n", 
 						i+1, report->Rams[i].Manufacturer, report->Rams[i].Type, 
-						report->Rams[i].CapacityMB, report->Rams[i].SpeedMts);
+						report->Rams[i].CapacityMb, report->Rams[i].SpeedMts);
 		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
 	}
 	
@@ -78,11 +78,11 @@ void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 						L"  SubVendorID: %04X, SubDeviceID: %04X\r\n",
 						i + 1, 
 						report->Gpus[i].Model, 
-						report->Gpus[i].VenID, 
-						report->Gpus[i].DevID,
+						report->Gpus[i].VenId, 
+						report->Gpus[i].DevId,
 						report->Gpus[i].SubVendor,
-						report->Gpus[i].SubVenID, 
-						report->Gpus[i].SubDevID  
+						report->Gpus[i].SubVenId, 
+						report->Gpus[i].SubDevId  
 						);
 		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
 		if (report->Gpus[i].VRAMSizeBytes > 0) {
@@ -120,8 +120,8 @@ void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 						i + 1, 
 						m->VendorName, 
 						m->MonitorName[0] ? m->MonitorName : L"Generic", 
-						m->VendorID,    // "PHL"
-						m->ProductID,   // "C32C"
+						m->VendorId,    // "PHL"
+						m->ProductId,   // "C32C"
 						m->Year);
 		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
 		

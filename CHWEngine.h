@@ -22,14 +22,14 @@ typedef struct{
 	WCHAR SystemName[64];
 	WCHAR Model[64];
 	WCHAR ChipsetName[128];
-	WCHAR ChipsetID[32];
+	WCHAR ChipsetId[32];
 	WCHAR BiosVersion[32];
 } BOARD_INFO;
 
 typedef struct{
 	WCHAR Manufacturer[64];
 	WCHAR Type[16];
-	DWORD CapacityMB;
+	DWORD CapacityMb;
 	DWORD SpeedMts;
 } RAM_INFO;
 
@@ -37,7 +37,7 @@ typedef struct {
 	WCHAR Vendor[64];   
 	WCHAR Model[128];    
 	WCHAR SubVendor[128];
-	WORD  VenID, DevID, SubVenID, SubDevID;
+	WORD  VenId, DevId, SubVenId, SubDevId;
 	UINT64 VRAMSizeBytes;
 } GPU_INFO;
 
@@ -55,8 +55,8 @@ typedef struct {
 	WCHAR DeviceName[64];
 	WCHAR VendorName[64];
 	WCHAR MonitorName[128];  // Friendly name, e.g. "27M2N5810"
-	WCHAR VendorID[8];       // VendorID "PHL"
-	WCHAR ProductID[16];
+	WCHAR VendorId[8];       // VendorID "PHL"
+	WCHAR ProductId[16];
 	int Year;       
 	
 	int PhysWidth;           
