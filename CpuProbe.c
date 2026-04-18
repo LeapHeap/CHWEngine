@@ -38,7 +38,7 @@ void ProbeCpu(HW_REPORT* report) {
 						__cpuid((int*)(brand + 0),  0x80000002);
 						__cpuid((int*)(brand + 16), 0x80000003);
 						__cpuid((int*)(brand + 32), 0x80000004);
-						MultiByteToWideChar(CP_ACP, 0, brand, -1, cpu->Model, 128);
+						MultiByteToWideChar(CP_ACP, 0, brand, -1, cpu->Model, _countof(cpu->Model));
 					}
 					SetThreadGroupAffinity(GetCurrentThread(), &oldAffinity, NULL);
 				}

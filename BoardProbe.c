@@ -5,6 +5,8 @@
 #include "resource.h"
 #include <setupapi.h>
 #include <devguid.h>
+#include <stdio.h>
+#include <wchar.h>
 
 #define SIG_RSMB 0x52534D42
 DWORD signature = SIG_RSMB;
@@ -18,7 +20,8 @@ typedef struct {
 
 static void Internal_GetSmbiosString(BYTE* pStructStart, BYTE index, WCHAR* outBuf, DWORD maxLen) {
 	if (index == 0 || outBuf == NULL) {
-		lstrcpyW(outBuf, L"Unknown");
+		//lstrcpyW(outBuf, L"Unknown");
+		lstrcpynW(outBuf,L"Unknown",_countof(outBuf));
 		return;
 	}
 	BYTE length = pStructStart[1];
@@ -33,7 +36,7 @@ static void Internal_GetSmbiosString(BYTE* pStructStart, BYTE index, WCHAR* outB
 WCHAR* IntToWchar(BYTE val) {
 	static WCHAR buffer[16]; 
 	// Convert number 34 to L"34"
-	wsprintfW(buffer, L"%u", (UINT)val); 
+	swprintf_s(buffer, _countof(buffer), L"%u", (UINT)val);
 	return buffer;
 }
 
@@ -157,7 +160,7 @@ BOOL ProbeBoardAndRam(HW_REPORT* report) {
 				Internal_MapIdFromResource(IDR_CSV_MEMTYPE,IntToWchar(mType),ram->Type,16);
 				// Print raw data if not matched
 				if (lstrcmpW(ram->Type, L"DDRx") == 0) {
-					wsprintfW(ram->Type, L"Unknown(0x%02X)", mType);
+					swprintf_s(ram->Type, _countof(ram->Type), L"Unknown(0x%02X)", mType);
 				}
 				
 				// Get memory speed

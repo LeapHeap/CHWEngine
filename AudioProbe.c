@@ -40,7 +40,7 @@ void ProbeAudio(HW_REPORT* report) {
 		}
 		
 		if (!isDuplicate && report->AudioCount < 8) {
-			lstrcpynW(report->Audios[report->AudioCount].Model, friendlyName, 128);
+			lstrcpynW(report->Audios[report->AudioCount].Model, friendlyName, _countof(report->Audios[report->AudioCount].Model));
 			report->AudioCount++;
 		}
 	}

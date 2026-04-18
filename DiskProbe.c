@@ -124,7 +124,7 @@ void ProbeDisks(HW_REPORT* report) {
 					// Model name (ProductId)
 					if (desc->ProductIdOffset != 0) {
 						char* pModel = (char*)(buffer + desc->ProductIdOffset);
-						MultiByteToWideChar(CP_ACP, 0, pModel, -1, disk->Model, 128);
+						MultiByteToWideChar(CP_ACP, 0, pModel, -1, disk->Model, _countof(disk->Model));
 						int len = lstrlenW(disk->Model);
 						while (len > 0 && disk->Model[len - 1] == L' ') disk->Model[--len] = L'\0';
 					}
@@ -132,7 +132,7 @@ void ProbeDisks(HW_REPORT* report) {
 					// Serial Number (Might be empty in LowPriv, but we try)
 					if (desc->SerialNumberOffset != 0) {
 						char* pSN = (char*)(buffer + desc->SerialNumberOffset);
-						MultiByteToWideChar(CP_ACP, 0, pSN, -1, disk->SerialNumber, 64);
+						MultiByteToWideChar(CP_ACP, 0, pSN, -1, disk->SerialNumber, _countof(disk->SerialNumber));
 						int len = lstrlenW(disk->SerialNumber);
 						while (len > 0 && disk->SerialNumber[len - 1] == L' ') disk->SerialNumber[--len] = L'\0';
 					} else {

@@ -3,6 +3,8 @@
 #include <windows.h>
 #include <wbemidl.h>
 #include <math.h>
+#include <stdio.h>
+#include <wchar.h>
 #include "CHWEngine.h"
 #include "Utils.h"
 #include "resource.h"
@@ -29,7 +31,8 @@ static float GetMonitorSizeByInstance(const WCHAR* instanceName) {
 	
 	// WMI InstanceName matches the Registry path under Enum
 	// Path: HKLM\SYSTEM\CurrentControlSet\Enum\[InstanceName]\Device Parameters
-	wsprintfW(regPath, L"SYSTEM\\CurrentControlSet\\Enum\\%s\\Device Parameters", instanceName);
+	swprintf_s(regPath,_countof(regPath),L"SYSTEM\\CurrentControlSet\\Enum\\%s\\Device Parameters", instanceName);
+	
 	
 	if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, regPath, 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
 		BYTE edid[256];
@@ -127,7 +130,7 @@ void ProbeMonitorsWMI(HW_REPORT* report) {
 			// Note: WMI InstanceName sometimes has a suffix like "_0" 
 			// we need to strip it if the Registry key doesn't have it.
 			WCHAR cleanInstance[256];
-			lstrcpyW(cleanInstance, varInstance.bstrVal);
+			lstrcpynW(cleanInstance,varInstance.bstrVal,_countof(cleanInstance));
 			
 			WCHAR* pSuffix = wcsrchr(cleanInstance, L'_');
 			if (pSuffix && iswdigit(pSuffix[1])) {
@@ -180,12 +183,12 @@ void ProbeMonitors(HW_REPORT* report) {
 					mon->VendorID[3] = L'\0';
 					
 					// Use the same internal mapping as your WMI version
-					Internal_ResolveVendorName(mon->VendorID, mon->VendorName, 64);
+					Internal_ResolveVendorName(mon->VendorID, mon->VendorName, _countof(mon->VendorName));
 				}
 				
 				// --- 4. Get Monitor Friendly Name ---
 				// WMI uses "UserFriendlyName", EnumDisplayDevices uses "DeviceString"
-				lstrcpynW(mon->MonitorName, ddMon.DeviceString, 128);
+				lstrcpynW(mon->MonitorName, ddMon.DeviceString, _countof(mon->MonitorName));
 				
 				// --- 5. Grab Current Resolution ---
 				// This replaces the EnumDisplaySettingsW call in your WMI version
