@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <wchar.h>
 
-#define DEFINE_HW_STR_GETTER(hwName, name, member) \
+#define DEFINE_HW_STR_GETTER(hwName, name, member, PluralSuffix) \
 DLLIMPORT void Get##hwName##name(int index, LPWSTR buffer, int maxLen) { \
 if (buffer == NULL || maxLen <= 0) return; \
 if (!g_Status.hwName) { \
-Probe##hwName(&g_Cache); \
+Probe##hwName##PluralSuffix(&g_Cache); \
 g_Status.hwName = TRUE; \
 } \
 if (index >= 0 && index < g_Cache.hwName##Count) { \
@@ -16,10 +16,10 @@ buffer[0] = L'\0'; \
 } \
 }
 
-#define DEFINE_HW_COUNT_GETTER(hwName) \
+#define DEFINE_HW_COUNT_GETTER(hwName,PluralSuffix) \
 DLLIMPORT int Get##hwName##Count() { \
 if (!g_Status.hwName) { \
-Probe##hwName(&g_Cache); \
+Probe##hwName##PluralSuffix(&g_Cache); \
 g_Status.hwName = TRUE; \
 } \
 return g_Cache.hwName##Count; \
@@ -29,8 +29,8 @@ static HW_REPORT g_Cache;
 
 static struct {
 	BOOL Cpu;
-	BOOL Disk;
-	BOOL Monitor;
+	BOOL Board;
+	BOOL Ram;
 } g_Status = { FALSE };
 
 
@@ -58,17 +58,20 @@ static struct {
 //	return g_Cache.CpuCount;
 //}
 
-#define X(hw,name,mem) DEFINE_HW_STR_GETTER(hw,name,mem)
+static void ProbeBoard(HW_REPORT* cache) { ProbeBoardAndRam(cache); }
+static void ProbeRams(HW_REPORT* cache)   { ProbeBoardAndRam(cache); }
+
+#define X(hw,name,mem,suff) DEFINE_HW_STR_GETTER(hw,name,mem,suff)
 HW_STR_FIELDS
 #undef X
 
-#define X(hw) DEFINE_HW_COUNT_GETTER(hw)
+#define X(hw,suff) DEFINE_HW_COUNT_GETTER(hw,suff)
 HW_COUNT_FIELDS
 #undef X
 
 DLLIMPORT int GetCpuCoreCount(int index){
 	if (!g_Status.Cpu) {
-		ProbeCpu(&g_Cache);
+		ProbeCpus(&g_Cache);
 		g_Status.Cpu = TRUE;
 	}
 	return g_Cache.Cpus[index].CoreCount;
@@ -76,7 +79,7 @@ DLLIMPORT int GetCpuCoreCount(int index){
 
 DLLIMPORT int GetCpuThreadCount(int index){
 	if (!g_Status.Cpu) {
-		ProbeCpu(&g_Cache);
+		ProbeCpus(&g_Cache);
 		g_Status.Cpu = TRUE;
 	}
 	return g_Cache.Cpus[index].ThreadCount;

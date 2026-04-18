@@ -107,18 +107,18 @@ typedef struct {
 
 
 #define HW_STR_FIELDS \
-X(Cpu,Model,Model) \
-//X(Board,Make,Manufacturer) \
-//X(Board,SysName,SystemName) \
-//X(Board,Model,Model) \
-//X(Board,ChipsetName,ChipsetName) \
-//X(Board,BiosVer,BiosVersion) \
-//X(Ram,Make,Manufacturer) \
-//X(Ram,Type,Type)
+X(Cpu,Model,Model,s) \
+X(Board,Make,Manufacturer, ) \
+X(Board,SysName,SystemName, ) \
+X(Board,Model,Model, ) \
+X(Board,ChipsetName,ChipsetName, ) \
+X(Board,BiosVer,BiosVersion, ) \
+X(Ram,Make,Manufacturer, ) \
+X(Ram,Type,Type, )
 
 #define HW_COUNT_FIELDS \
-X(Cpu) \
-//X(Ram)
+X(Cpu,s) \
+X(Ram,s)
 
 #include "CHWInterface.h"
 
