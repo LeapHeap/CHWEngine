@@ -25,12 +25,56 @@ g_Status.hwName = TRUE; \
 return g_Cache.hwName##Count; \
 }
 
+
+#define DEFINE_HW_VAL_GETTER(hwName, name, member, type, failVal) \
+DLLIMPORT type Get##hwName##name(int index) { \
+if (!g_Status.hwName) { \
+Probe##hwName##s(&g_Cache); \
+g_Status.hwName = TRUE; \
+} \
+if (index >= 0 && index < g_Cache.hwName##Count) { \
+return g_Cache.hwName##s[index].member; \
+} \
+return (type)failVal; \
+}
+
+#define DEFINE_MONITOR_STR_GETTER(name, member, suffix) \
+DLLIMPORT void GetMonitor##name##suffix(int index, LPWSTR buffer, int maxLen) { \
+if (buffer == NULL || maxLen <= 0) return; \
+if (!g_Status.Monitor) { \
+ProbeMonitors##suffix(&g_Cache); \
+g_Status.Monitor = TRUE; \
+} \
+if (index >= 0 && index < g_Cache.MonitorCount) { \
+lstrcpynW(buffer, g_Cache.Monitors[index].member, maxLen); \
+} else { \
+buffer[0] = L'\0'; \
+} \
+}
+
+#define DEFINE_MONITOR_VAL_GETTER(name, member, type, failVal, suffix) \
+DLLIMPORT type GetMonitor##name##suffix(int index) { \
+if (!g_Status.Monitor) { \
+ProbeMonitors##suffix(&g_Cache); \
+g_Status.Monitor = TRUE; \
+} \
+if (index >= 0 && index < g_Cache.MonitorCount) { \
+return g_Cache.Monitors[index].member; \
+} \
+return (type)failVal; \
+}
+
 static HW_REPORT g_Cache;
 
 static struct {
 	BOOL Cpu;
 	BOOL Board;
 	BOOL Ram;
+	BOOL Disk;
+	BOOL Gpu;
+	BOOL Monitor;
+	BOOL Audio;
+	BOOL Nic;
 } g_Status = { FALSE };
 
 
@@ -68,6 +112,20 @@ HW_STR_FIELDS
 #define X(hw) DEFINE_HW_COUNT_GETTER(hw)
 HW_COUNT_FIELDS
 #undef X
+
+
+#define X(hw,name,mem,type) DEFINE_HW_VAL_GETTER(hw,name,mem,type,0)
+HW_VAL_FIELDS
+#undef X
+
+#define X(name,mem,suffix) DEFINE_MONITOR_STR_GETTER(name,mem,suffix)
+MONITOR_STR_FIELDS
+#undef X
+
+#define X(name,mem,type,suffix) DEFINE_MONITOR_VAL_GETTER(name,mem,type,0,suffix)
+MONITOR_VAL_FIELDS
+#undef X
+
 
 DLLIMPORT int GetCpuCoreCount(int index){
 	if (!g_Status.Cpu) {

@@ -60,7 +60,7 @@ void Internal_ResolveVendorName(const WCHAR* vendorId, WCHAR* outName, int maxLe
 	Internal_MapIdFromResource(IDR_CSV_MONITORS, vendorId, outName, maxLen);
 }
 
-void ProbeMonitorsWMI(HW_REPORT* report) {
+void ProbeMonitorsWmi(HW_REPORT* report) {
 	HRESULT hr;
 	IWbemLocator *pLoc = NULL;
 	IWbemServices *pSvc = NULL;

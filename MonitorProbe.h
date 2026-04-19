@@ -4,7 +4,7 @@
 #include <windows.h>
 #include "CHWEngine.h"
 
-DLLIMPORT void ProbeMonitorsWMI(HW_REPORT* report);
+DLLIMPORT void ProbeMonitorsWmi(HW_REPORT* report);
 DLLIMPORT void ProbeMonitors(HW_REPORT* report);
 
 #endif

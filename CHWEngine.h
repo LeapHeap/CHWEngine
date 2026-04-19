@@ -38,7 +38,7 @@ typedef struct {
 	WCHAR Model[128];    
 	WCHAR SubVendor[128];
 	WORD  VenId, DevId, SubVenId, SubDevId;
-	UINT64 VRAMSizeBytes;
+	UINT64 VRamSizeBytes;
 } GPU_INFO;
 
 typedef struct {
@@ -109,16 +109,54 @@ typedef struct {
 #define HW_STR_FIELDS \
 X(Cpu,Model,Model) \
 X(Board,Make,Manufacturer) \
-X(Board,SysName,SystemName) \
+X(Board,SystemName,SystemName) \
 X(Board,Model,Model) \
 X(Board,ChipsetName,ChipsetName) \
-X(Board,BiosVer,BiosVersion) \
+X(Board,BiosVersion,BiosVersion) \
 X(Ram,Make,Manufacturer) \
-X(Ram,Type,Type)
+X(Ram,Type,Type) \
+X(Gpu,Vendor,Vendor) \
+X(Gpu,Model,Model) \
+X(Gpu,SubVendor,SubVendor) \
+X(Disk,Model,Model) \
+X(Disk,SerialNumber,SerialNumber) \
+X(Audio,Model,Model) \
+X(Nic,Model,Model) \
 
 #define HW_COUNT_FIELDS \
 X(Cpu) \
-X(Ram)
+X(Board) \
+X(Ram) \
+X(Gpu) \
+X(Disk) \
+X(Audio) \
+X(Nic) \
+
+#define HW_VAL_FIELDS \
+X(Ram,CapacityMb,CapacityMb,DWORD) \
+X(Ram,SpeedMts,SpeedMts,DWORD) \
+X(Gpu,VRamSizeBytes,VRamSizeBytes,UINT64) \
+X(Disk,TotalSizeByte,TotalSizeByte,unsigned __int64) \
+
+#define MONITOR_STR_FIELDS \
+X(VendorName,VendorName,) \
+X(VendorName,VendorName,Wmi) \
+X(MonitorName,MonitorName,) \
+X(MonitorName,MonitorName,Wmi) \
+X(VendorId,VendorId,) \
+X(VendorId,VendorId,Wmi) \
+X(ProductId,ProductId,Wmi) \
+
+
+
+#define MONITOR_VAL_FIELDS \
+X(CurWidth,CurWidth,int, ) \
+X(CurWidth,CurWidth,int,Wmi) \
+X(CurHeight,CurHeight,int, ) \
+X(CurHeight,CurHeight,int,Wmi) \
+X(Diagonal,Diagonal,float,Wmi) \
+X(Year,Year,int,Wmi) \
+
 
 #include "CHWInterface.h"
 
