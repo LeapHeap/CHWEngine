@@ -29,7 +29,7 @@ void Internal_GetVramViaDXGI(GPU_INFO* gpu) {
 			// 4. Match using PCI Vendor ID and Device ID
 			if (desc.VendorId == gpu->VenId && desc.DeviceId == gpu->DevId) {
 				// Update the correct member name: VRAMSizeBytes
-				gpu->VRamSizeBytes = desc.DedicatedVideoMemory;
+				gpu->VRamSizeByte = desc.DedicatedVideoMemory;
 				
 				pAdapter->lpVtbl->Release(pAdapter);
 				break;
@@ -95,7 +95,7 @@ static int Internal_ScanPciBus(const GUID* classGuid, void* targetArray, int max
 				Internal_MapIdFromResource(IDR_CSV_GRAPHICS,subVenStr,gpu->SubVendor,128);
 				SetupDiGetDeviceRegistryPropertyW(hDevInfo, &devData, SPDRP_DEVICEDESC, 
 												  NULL, (PBYTE)gpu->Model, sizeof(gpu->Model), NULL);
-				gpu->VRamSizeBytes = 0;
+				gpu->VRamSizeByte = 0;
 				Internal_GetVramViaDXGI(gpu);
 			} 
 			else if (type == 1) { // AUDIO_INFO

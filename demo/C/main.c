@@ -85,14 +85,14 @@ void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 						report->Gpus[i].SubDevId  
 						);
 		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-		if (report->Gpus[i].VRamSizeBytes > 0) {
+		if (report->Gpus[i].VRamSizeByte > 0) {
 			// Standard conversion: 1024 * 1024 * 1024 = 1073741824
-			unsigned int vramGB = (unsigned int)(report->Gpus[i].VRamSizeBytes / 1073741824);
+			unsigned int vramGB = (unsigned int)(report->Gpus[i].VRamSizeByte / 1073741824);
 			
 			if (vramGB >= 1) {
 				len = wsprintfW(buf, L"  VRAM: %u GB\r\n", vramGB);
 			} else {
-				unsigned int vramMB = (unsigned int)(report->Gpus[i].VRamSizeBytes / (1024 * 1024));
+				unsigned int vramMB = (unsigned int)(report->Gpus[i].VRamSizeByte / (1024 * 1024));
 				len = wsprintfW(buf, L"  VRAM: %u MB\r\n", vramMB);
 			}
 			WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);

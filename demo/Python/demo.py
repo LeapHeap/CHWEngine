@@ -49,7 +49,21 @@ def run_hardware_demo():
     # Track execution time
     start_time = time.perf_counter()
 
-    # 1. CPU Section
+    mb_count = engine.get_count("Board")
+    print(f"\n[Motherboard]")
+    for i in range(mb_count):
+        make = engine.get_str("GetBoardMake", i)
+        sys_name = engine.get_str("GetBoardSystemName", i)
+        model = engine.get_str("GetBoardModel", i)
+        chipset_name = engine.get_str("GetBoardChipsetName", i)
+        bios_version = engine.get_str("GetBoardBiosVersion", i)
+        print(f"Manufacturer: {make}")
+        print(f"System Name: {sys_name}")
+        print(f"Model: {model}")
+        print(f"Chipset: {chipset_name}")
+        print(f"BIOS version: {bios_version}")
+
+
     cpu_count = engine.get_count("Cpu")
     print(f"\n[CPU] Found {cpu_count} processor(s)")
     for i in range(cpu_count):
@@ -58,15 +72,22 @@ def run_hardware_demo():
         threads = engine.get_val("GetCpuThreadCount", ctypes.c_ulong, i)
         print(f"  > #{i}: {model} ({cores}C/{threads}T)")
 
-    # 2. RAM Section
     ram_count = engine.get_count("Ram")
     print(f"\n[RAM] Found {ram_count} stick(s)")
     for i in range(ram_count):
         make = engine.get_str("GetRamMake", i)
+        type = engine.get_str("GetRamType",i)
         cap_mb = engine.get_val("GetRamCapacityMb", ctypes.c_uint64, i)
         speed = engine.get_val("GetRamSpeedMts", ctypes.c_ulong, i)
-        print(f"  > #{i}: {make} | {cap_mb} MB | {speed} MT/s")
-    
+        print(f"  > #{i}: {make} | {type} | {cap_mb} MB | {speed} MT/s")
+
+    gpu_count = engine.get_count("Gpu")
+    print(f"\n[GPU] Found {gpu_count} graphics adapter(s)")
+    for i in range(gpu_count):
+        model = engine.get_str("GetGpuModel", i)
+        vram = engine.get_val("GetGpuVRamSizeByte", ctypes.c_uint64, i)
+        print(f"  > #{i}: {model} | VRAM: {vram / (1024**3):.2f} GB")
+
     mon_count = engine.get_count("Monitor")
     print(f"\n[Monitor] Found {mon_count} display(s)")
     USE_WMI = True
@@ -83,21 +104,33 @@ def run_hardware_demo():
             year = engine.get_val("GetMonitorYearWmi", ctypes.c_ulong, i)
             print(f"  > #{i}: {vendor_name} {model} [{vendor_id}{product_id}] ({year})")
 
+    disk_count = engine.get_count("Disk")
+    print(f"\n[Storage] Found {disk_count} storage device(s)")
+    for i in range(disk_count):
+        model = engine.get_str("GetDiskModel", i)
+        #sn = engine.get_str("GetDiskSerialNumber", i)
+        capacity_byte = engine.get_val("GetDiskTotalSizeByte", ctypes.c_uint64, i)
+        size_gb = capacity_byte // (1024 * 1024 * 1024)
+        print(f"  > #{i}: {model} | {size_gb} GB")
 
-    # 4. GPU Section
-    gpu_count = engine.get_count("Gpu")
-    print(f"\n[GPU] Found {gpu_count} graphics adapter(s)")
-    for i in range(gpu_count):
-        model = engine.get_str("GetGpuModel", i)
-        vram = engine.get_val("GetGpuVRamSizeBytes", ctypes.c_uint64, i)
-        print(f"  > #{i}: {model} | VRAM: {vram / (1024**3):.2f} GB")
+    nic_count = engine.get_count("Nic")
+    print(f"\n[NIC] Found {nic_count} network interface(s)")
+    for i in range(nic_count):
+        model = engine.get_str("GetNicModel", i)
+        print(f"  > #{i}: {model}")
+    
+    audio_count = engine.get_count("Audio")
+    print(f"\n[Audio] Found {audio_count} audio device(s)")
+    for i in range(audio_count):
+        model = engine.get_str("GetAudioModel", i)
+        print(f"  > #{i}: {model}")
 
     end_time = time.perf_counter()
     duration = (end_time - start_time) * 1000 # Convert to milliseconds
-
     print("\n" + "=" * 50)
     print(f"Detection completed in {duration:.2f} ms")
     print("=" * 50)
+
 
 if __name__ == "__main__":
     run_hardware_demo()

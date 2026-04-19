@@ -38,12 +38,12 @@ typedef struct {
 	WCHAR Model[128];    
 	WCHAR SubVendor[128];
 	WORD  VenId, DevId, SubVenId, SubDevId;
-	UINT64 VRamSizeBytes;
+	UINT64 VRamSizeByte;
 } GPU_INFO;
 
 typedef struct {
 	WCHAR Model[128];
-	unsigned __int64 TotalSizeByte;
+	UINT64 TotalSizeByte;
 	WCHAR SerialNumber[64];
 } DISK_INFO;
 
@@ -136,8 +136,8 @@ X(Monitor) \
 #define HW_VAL_FIELDS \
 X(Ram,CapacityMb,CapacityMb,DWORD) \
 X(Ram,SpeedMts,SpeedMts,DWORD) \
-X(Gpu,VRamSizeBytes,VRamSizeBytes,UINT64) \
-X(Disk,TotalSizeByte,TotalSizeByte,unsigned __int64) \
+X(Gpu,VRamSizeByte,VRamSizeByte,UINT64) \
+X(Disk,TotalSizeByte,TotalSizeByte,UINT64) \
 
 #define MONITOR_STR_FIELDS \
 X(VendorName,VendorName,) \
@@ -147,7 +147,6 @@ X(Model,Model,Wmi) \
 X(VendorId,VendorId,) \
 X(VendorId,VendorId,Wmi) \
 X(ProductId,ProductId,Wmi) \
-
 
 
 #define MONITOR_VAL_FIELDS \
