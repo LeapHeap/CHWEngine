@@ -1,8 +1,8 @@
 #include <windows.h>
-#include "../CHWEngine.h"
+#include "../../CHWEngine.h"
 
-//#define PROBMONWMI
-#define PROBMON
+#define PROBMONWMI
+//#define PROBMON
 
 
 double elapsedMilliseconds;
@@ -119,7 +119,7 @@ void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 		len = wsprintfW(buf, L"Monitor %d: %s %s [%s%s] (%d)\r\n", 
 						i + 1, 
 						m->VendorName, 
-						m->MonitorName[0] ? m->MonitorName : L"Generic", 
+						m->Model[0] ? m->Model : L"Generic", 
 						m->VendorId,    // "PHL"
 						m->ProductId,   // "C32C"
 						m->Year);

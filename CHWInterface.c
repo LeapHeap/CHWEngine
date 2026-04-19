@@ -41,9 +41,9 @@ return (type)failVal; \
 #define DEFINE_MONITOR_STR_GETTER(name, member, suffix) \
 DLLIMPORT void GetMonitor##name##suffix(int index, LPWSTR buffer, int maxLen) { \
 if (buffer == NULL || maxLen <= 0) return; \
-if (!g_Status.Monitor) { \
+if (!g_Status.Monitor##suffix) { \
 ProbeMonitors##suffix(&g_Cache); \
-g_Status.Monitor = TRUE; \
+g_Status.Monitor##suffix = TRUE; \
 } \
 if (index >= 0 && index < g_Cache.MonitorCount) { \
 lstrcpynW(buffer, g_Cache.Monitors[index].member, maxLen); \
@@ -73,6 +73,7 @@ static struct {
 	BOOL Disk;
 	BOOL Gpu;
 	BOOL Monitor;
+	BOOL MonitorWmi;
 	BOOL Audio;
 	BOOL Nic;
 } g_Status = { FALSE };

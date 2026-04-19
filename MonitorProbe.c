@@ -16,13 +16,18 @@ static void WmiArrayToWchar(VARIANT* v, WCHAR* dest, int maxLen) {
 	long count = uBound - lBound + 1;
 	if (count > maxLen - 1) count = maxLen - 1;
 	
+	long actualIdx = 0;
 	for (long i = 0; i < count; i++) {
 		unsigned short val;
-		SafeArrayGetElement(v->parray, &i, &val);
-		if (val == 0) break; 
-		dest[i] = (WCHAR)val;
+		long currentIdx = lBound + i; 
+		SafeArrayGetElement(v->parray, &currentIdx, &val);
+		
+		if (val == 0 || val == 0x0A || val == 0x0D) break; 
+		
+		dest[actualIdx++] = (WCHAR)val;
 	}
-	dest[count] = L'\0';
+	
+	dest[actualIdx] = L'\0';
 }
 
 static float GetMonitorSizeByInstance(const WCHAR* instanceName) {
@@ -104,7 +109,7 @@ void ProbeMonitorsWmi(HW_REPORT* report) {
 		}
 		
 		if (SUCCEEDED(pclsObj->lpVtbl->Get(pclsObj, L"UserFriendlyName", 0, &vtProp, 0, 0))) {
-			WmiArrayToWchar(&vtProp, mon->MonitorName, 128); // e.g. "27M2N5810"
+			WmiArrayToWchar(&vtProp, mon->Model, 128); // e.g. "27M2N5810"
 			VariantClear(&vtProp);
 		}
 		
@@ -188,7 +193,7 @@ void ProbeMonitors(HW_REPORT* report) {
 				
 				// --- 4. Get Monitor Friendly Name ---
 				// WMI uses "UserFriendlyName", EnumDisplayDevices uses "DeviceString"
-				lstrcpynW(mon->MonitorName, ddMon.DeviceString, _countof(mon->MonitorName));
+				lstrcpynW(mon->Model, ddMon.DeviceString, _countof(mon->Model));
 				
 				// --- 5. Grab Current Resolution ---
 				// This replaces the EnumDisplaySettingsW call in your WMI version

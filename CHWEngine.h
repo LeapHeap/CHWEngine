@@ -54,7 +54,7 @@ typedef struct {
 	
 	WCHAR DeviceName[64];
 	WCHAR VendorName[64];
-	WCHAR MonitorName[128];  // Friendly name, e.g. "27M2N5810"
+	WCHAR Model[128];  // Friendly name, e.g. "27M2N5810"
 	WCHAR VendorId[8];       // VendorID "PHL"
 	WCHAR ProductId[16];
 	int Year;       
@@ -131,6 +131,7 @@ X(Gpu) \
 X(Disk) \
 X(Audio) \
 X(Nic) \
+X(Monitor) \
 
 #define HW_VAL_FIELDS \
 X(Ram,CapacityMb,CapacityMb,DWORD) \
@@ -141,8 +142,8 @@ X(Disk,TotalSizeByte,TotalSizeByte,unsigned __int64) \
 #define MONITOR_STR_FIELDS \
 X(VendorName,VendorName,) \
 X(VendorName,VendorName,Wmi) \
-X(MonitorName,MonitorName,) \
-X(MonitorName,MonitorName,Wmi) \
+X(Model,Model,) \
+X(Model,Model,Wmi) \
 X(VendorId,VendorId,) \
 X(VendorId,VendorId,Wmi) \
 X(ProductId,ProductId,Wmi) \
