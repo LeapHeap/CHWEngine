@@ -8,6 +8,7 @@
 #include "Utils.h"
 #include "resource.h"
 #include <dxgi.h>
+
 void Internal_GetVramViaDXGI(GPU_INFO* gpu) {
 	IDXGIFactory* pFactory = NULL;
 	
@@ -26,11 +27,13 @@ void Internal_GetVramViaDXGI(GPU_INFO* gpu) {
 		// 3. Get adapter description
 		if (SUCCEEDED(pAdapter->lpVtbl->GetDesc(pAdapter, &desc))) {
 			
+			WCHAR dxgiVenStr[5], dxgiDevStr[5];
+			swprintf_s(dxgiVenStr, 5, L"%04X", desc.VendorId);
+			swprintf_s(dxgiDevStr, 5, L"%04X", desc.DeviceId);
+			
 			// 4. Match using PCI Vendor ID and Device ID
-			if (desc.VendorId == gpu->VenId && desc.DeviceId == gpu->DevId) {
-				// Update the correct member name: VRAMSizeBytes
+			if (_wcsicmp(dxgiVenStr, gpu->VenId) == 0 && _wcsicmp(dxgiDevStr, gpu->DevId) == 0) {
 				gpu->VRamSizeByte = desc.DedicatedVideoMemory;
-				
 				pAdapter->lpVtbl->Release(pAdapter);
 				break;
 			}
@@ -44,19 +47,41 @@ void Internal_GetVramViaDXGI(GPU_INFO* gpu) {
 }
 
 
-static void Internal_ParsePciId(LPCWSTR hwId, WORD* venId, WORD* devId, WORD* subVenId, WORD* subDevId) {
+//static void Internal_ParsePciId(LPCWSTR hwId, WORD* venId, WORD* devId, WORD* subVenId, WORD* subDevId) {
+//	LPCWSTR p;
+//	if ((p = wcsstr(hwId, L"VEN_"))) *venId = (WORD)wcstoul(p + 4, NULL, 16);
+//	if ((p = wcsstr(hwId, L"DEV_"))) *devId = (WORD)wcstoul(p + 4, NULL, 16);
+//	
+//	if ((p = wcsstr(hwId, L"SUBSYS_"))) {
+//		WCHAR subStr[9] = {0};
+//		wcsncpy(subStr, p + 7, 8);
+//		
+//		DWORD dwFullSub = wcstoul(subStr, NULL, 16);
+//		
+//		*subVenId = (WORD)(dwFullSub & 0xFFFF); // Take low 16-bit as Subvendor ID
+//		*subDevId = (WORD)(dwFullSub >> 16); // Take high 16-bit as Sub-device ID and store as low 16-bit
+//	}
+//}
+
+static void Internal_ParsePciId(LPCWSTR hwId, GPU_INFO* gpu) {
 	LPCWSTR p;
-	if ((p = wcsstr(hwId, L"VEN_"))) *venId = (WORD)wcstoul(p + 4, NULL, 16);
-	if ((p = wcsstr(hwId, L"DEV_"))) *devId = (WORD)wcstoul(p + 4, NULL, 16);
+	
+	if ((p = wcsstr(hwId, L"VEN_"))) {
+		wcsncpy(gpu->VenId, p + 4, 4);
+		gpu->VenId[4] = L'\0';
+	}
+	
+	if ((p = wcsstr(hwId, L"DEV_"))) {
+		wcsncpy(gpu->DevId, p + 4, 4);
+		gpu->DevId[4] = L'\0';
+	}
 	
 	if ((p = wcsstr(hwId, L"SUBSYS_"))) {
-		WCHAR subStr[9] = {0};
-		wcsncpy(subStr, p + 7, 8);
+		wcsncpy(gpu->SubDevId, p + 7, 4);
+		gpu->SubDevId[4] = L'\0';
 		
-		DWORD dwFullSub = wcstoul(subStr, NULL, 16);
-		
-		*subVenId = (WORD)(dwFullSub & 0xFFFF); // Take low 16-bit as Subvendor ID
-		*subDevId = (WORD)(dwFullSub >> 16); // Take high 16-bit as Sub-device ID and store as low 16-bit
+		wcsncpy(gpu->SubVenId, p + 11, 4);
+		gpu->SubVenId[4] = L'\0';
 	}
 }
 
@@ -88,11 +113,10 @@ static int Internal_ScanPciBus(const GUID* classGuid, void* targetArray, int max
 			// Extract common ID and Model Name based on hardware type
 			if (type == 0) { // GPU_INFO
 				GPU_INFO* gpu = (GPU_INFO*)currentEntry;
-				Internal_ParsePciId(hwIdList, &gpu->VenId, &gpu->DevId, &gpu->SubVenId, &gpu->SubDevId);
+				Internal_ParsePciId(hwIdList,gpu);
 				WCHAR subVenStr[5];
-				Internal_IntToHexW(gpu->SubVenId, subVenStr);
 				// SubVenID mapper
-				Internal_MapIdFromResource(IDR_CSV_GRAPHICS,subVenStr,gpu->SubVendor,128);
+				Internal_MapIdFromResource(IDR_CSV_GRAPHICS,gpu->SubVenId,gpu->SubVendor,128);
 				SetupDiGetDeviceRegistryPropertyW(hDevInfo, &devData, SPDRP_DEVICEDESC, 
 												  NULL, (PBYTE)gpu->Model, sizeof(gpu->Model), NULL);
 				gpu->VRamSizeByte = 0;

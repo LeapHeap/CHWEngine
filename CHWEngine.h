@@ -37,7 +37,10 @@ typedef struct {
 	WCHAR Vendor[64];   
 	WCHAR Model[128];    
 	WCHAR SubVendor[128];
-	WORD  VenId, DevId, SubVenId, SubDevId;
+	WCHAR VenId[5];       // "10DE" + \0
+	WCHAR DevId[5];       // "1B80" + \0
+	WCHAR SubVenId[5];    // "1043" + \0
+	WCHAR SubDevId[5];    // "8591" + \0
 	UINT64 VRamSizeByte;
 } GPU_INFO;
 

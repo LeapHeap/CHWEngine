@@ -2,7 +2,7 @@
 filename = demo.dev
 name = demo
 UnitCount = 1
-Type = 0
+Type = 1
 Ver = 3
 Includes = 
 Libs = 

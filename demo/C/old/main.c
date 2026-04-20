@@ -1,5 +1,4 @@
 #include <windows.h>
-#include <stdio.h>
 #include "../../CHWEngine.h"
 
 #define PROBMONWMI
@@ -8,7 +7,6 @@
 
 double elapsedMilliseconds;
 
-#ifdef OLDOUT
 void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 	
 	HANDLE hFile = CreateFileW(fileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -209,48 +207,6 @@ void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
 	
 	CloseHandle(hFile);
 }
-#endif
-
-void DemoOutput(HW_REPORT* report){
-	
-	
-	// Motherboard info
-	wprintf(L"[Motherboard]\r\n");
-	for (int i = 0; i < report->BoardCount; i++){
-		const BOARD_INFO* board = &report->Boards[i];
-		wprintf(L"Make: %ls\r\n",board->Manufacturer);
-		wprintf(L"System name: %ls\r\n",board->SystemName);
-		wprintf(L"Model: %ls\r\n",board->Model);
-		wprintf(L"Chipset: %ls\r\n",board->ChipsetName[0] ? board->ChipsetName : board->ChipsetId);
-		wprintf(L"BIOS version: %ls\r\n",board->BiosVersion);
-		
-	}
-	
-	// CPU info
-	wprintf(L"\r\n[CPU] Count: %d\r\n",report->CpuCount);
-	for (int i=0;i<report->CpuCount;i++){
-		const CPU_INFO* cpu = &report->Cpus[i];
-		wprintf(L"Socket #%d: %ls | %dC%dT\r\n",i,cpu->Model,cpu->CoreCount,cpu->ThreadCount);
-	}
-	
-	// Memory info
-	wprintf(L"\r\n[RAM] Count: %d\r\n",report->RamCount);
-	for (int i=0;i<report->RamCount;i++){
-		const RAM_INFO* ram = &report->Rams[i];
-		wprintf(L"Slot #%d: %ls | %ls | %u MB | %u MT/s\r\n",i,ram->Manufacturer,ram->Type,ram->CapacityMb,ram->SpeedMts);
-	}
-	
-	// GPU info
-	wprintf(L"\r\n[GPU] Count: %d\r\n",report->GpuCount);
-	for (int i = 0; i<report->GpuCount; i++){
-		const GPU_INFO* gpu = &report->Gpus[i];
-		unsigned int vramGB;
-		if (gpu->VRamSizeByte > 0 ){
-			vramGB = (unsigned int)(report->Gpus[i].VRamSizeByte / 1073741824);
-		}
-		wprintf(L"GPU #%d: %ls (%uGB / %ls)\r\n",i,gpu->Model,vramGB,gpu->SubVendor[0] ? gpu->SubVendor : gpu->SubVenId);
-	}
-}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	HW_REPORT report = {0};
@@ -286,7 +242,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// 4. Calculate Duration
 	elapsedMilliseconds = (double)(end.QuadPart - start.QuadPart) * 1000.0 / frequency.QuadPart;
 	
-	DemoOutput(&report);
+	SaveReportToFile(&report, L"Report.txt");
+	
+	
+	MessageBoxW(NULL, L"Hardware detection complete. Report saved to Report.txt", L"CHWBox Demo", MB_OK);
 	return 0;
 }
 
