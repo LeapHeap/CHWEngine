@@ -26,7 +26,7 @@ Slot #0: KingBank | DDR5 | 16384 MB | 6000 MT/s
 Slot #1: KingBank | DDR5 | 16384 MB | 6000 MT/s
 
 [GPU] Count: 1
-GPU #0: NVIDIA GeForce RTX 5070 Ti (15GB / PALIT)
+GPU #0: NVIDIA GeForce RTX 5070 Ti (15.6GB / PALIT)
 
 [Monitor] Count: 1
 Monitor #0: Philips 27M2N5810 [PHLC32C] (2024) | 3840 x 2160 | 27.1 Inch
@@ -49,7 +49,7 @@ Audio #5: Realtek USB Audio
 Audio #6: Sonic Studio Virtual Mixer
 
 --------------------------------------------------
-Detection completed in: 15.99 ms
+Detection completed in: 22.74 ms
 --------------------------------------------------
 ```
 
