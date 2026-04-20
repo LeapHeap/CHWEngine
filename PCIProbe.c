@@ -44,8 +44,8 @@ void Internal_GetVramViaDXGI(GPU_INFO* gpu) {
 }
 
 
-static void Internal_ParsePciId(const WCHAR* hwId, WORD* venId, WORD* devId, WORD* subVenId, WORD* subDevId) {
-	const WCHAR* p;
+static void Internal_ParsePciId(LPCWSTR hwId, WORD* venId, WORD* devId, WORD* subVenId, WORD* subDevId) {
+	LPCWSTR p;
 	if ((p = wcsstr(hwId, L"VEN_"))) *venId = (WORD)wcstoul(p + 4, NULL, 16);
 	if ((p = wcsstr(hwId, L"DEV_"))) *devId = (WORD)wcstoul(p + 4, NULL, 16);
 	

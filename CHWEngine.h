@@ -9,7 +9,7 @@
 
 #include <windows.h>
 
-
+extern HMODULE g_hEngineModule;
 
 typedef struct {
 	WCHAR Model[128];
@@ -103,7 +103,7 @@ typedef struct {
 #include "CpuProbe.h"
 #include "DiskProbe.h"
 #include "MonitorProbe.h"
-#include "PCIProbe.h"
+#include "PciProbe.h"
 
 
 #define HW_STR_FIELDS \
