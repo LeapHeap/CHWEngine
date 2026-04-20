@@ -8,214 +8,17 @@
 
 double elapsedMilliseconds;
 
-#ifdef OLDOUT
-void SaveReportToFile(HW_REPORT* report, LPCWSTR fileName) {
-	
-	HANDLE hFile = CreateFileW(fileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hFile == INVALID_HANDLE_VALUE) return;
-	
-	
-	WCHAR buf[4096]; 
-	int len = 0;
-	
-	// Write BOM header
-	WORD bom = 0xFEFF;
-	DWORD written;
-	WriteFile(hFile, &bom, sizeof(bom), &written, NULL);
-	
-	// Board info
-	for (int i=0; i< report->BoardCount; i++){
-		BOARD_INFO* board = &report->Boards[i];
-		len = wsprintfW(buf, L"--- CHWEngine Hardware Report ---\r\n\r\n"
-						L"[Motherboard]\r\n"
-						L"Manufacturer: %s\r\n"
-						L"SystemName: %s\r\n"
-						L"Model: %s\r\n"
-						L"ChipsetName: %s\r\n"
-						L"ChipsetID: %s\r\n"
-						L"BIOS: %s\r\n\r\n",
-						board->Manufacturer, board->SystemName, board->Model, 
-						board->ChipsetName, board->ChipsetId, board->BiosVersion);
-		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	}
-	
-	
-	// CPU info
-	len = wsprintfW(buf, L"[Processor Information] Count: %d\r\n", report->CpuCount);
-	WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	
-	for (int i = 0; i < report->CpuCount; i++) {
-		CPU_INFO* cpu = &report->Cpus[i];
-		
-		// Header for each socket
-		len = wsprintfW(buf, L"Socket %d: %s", i + 1, cpu->Model);
-		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-		
-		// Detail line: Cores and Threads
-		len = wsprintfW(buf, L" | %d Physical Cores, %d Threads\r\n", 
-						cpu->CoreCount, 
-						cpu->ThreadCount);
-		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	}
-	WriteFile(hFile, L"\r\n", 2 * sizeof(WCHAR), &written, NULL);
-	
-	
-	// Memory info
-	len = wsprintfW(buf, L"[Memory] Count: %d\r\n", report->RamCount);
-	WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	for (int i = 0; i < report->RamCount; i++) {
-		len = wsprintfW(buf, L"Slot %d: %s | %s | %u MB | %u MT/s\r\n", 
-						i+1, report->Rams[i].Manufacturer, report->Rams[i].Type, 
-						report->Rams[i].CapacityMb, report->Rams[i].SpeedMts);
-		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	}
-	
-	// Gfx info
-	len = wsprintfW(buf, L"\r\n[GPU] Count: %d\r\n", report->GpuCount);
-	WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	for (int i = 0; i < report->GpuCount; i++) {
-		len = wsprintfW(buf, L"GPU %d: %s\r\n"
-						L"  VEN: %s, DEV: %s\r\n"
-						L"SubVendor: %s\r\n"
-						L"  SubVendorID: %s, SubDeviceID: %s\r\n",
-						i + 1, 
-						report->Gpus[i].Model, 
-						report->Gpus[i].VenId, 
-						report->Gpus[i].DevId,
-						report->Gpus[i].SubVendor,
-						report->Gpus[i].SubVenId, 
-						report->Gpus[i].SubDevId  
-						);
-		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-		if (report->Gpus[i].VRamSizeByte > 0) {
-			// Standard conversion: 1024 * 1024 * 1024 = 1073741824
-			unsigned int vramGB = (unsigned int)(report->Gpus[i].VRamSizeByte / 1073741824);
-			
-			if (vramGB >= 1) {
-				len = wsprintfW(buf, L"  VRAM: %u GB\r\n", vramGB);
-			} else {
-				unsigned int vramMB = (unsigned int)(report->Gpus[i].VRamSizeByte / (1024 * 1024));
-				len = wsprintfW(buf, L"  VRAM: %u MB\r\n", vramMB);
-			}
-			WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-		}
-	}
-	
-	// Monitor info
-	// --- Inside your report generation function ---
-	
-	len = wsprintfW(buf, L"\r\n[Monitors] Count: %d\r\n", report->MonitorCount);
-	WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	
-	for (int i = 0; i < report->MonitorCount; i++) {
-		MONITOR_INFO* m = &report->Monitors[i];
-		
-		
-		// Float to string conversion
-		int dWhole = (int)m->Diagonal;
-		int dFrac = (int)((m->Diagonal - (float)dWhole) * 10.0f);
-		if (dFrac < 0) dFrac = 0;
-		
-		// Line 1: Combine VendorID and ProductID for the tag
-		// Example: Philips 27M2N5810 [PHLC32C] (2024)
-		len = wsprintfW(buf, L"Monitor %d: %s %s [%s%s] (%d)\r\n", 
-						i + 1, 
-						m->VendorName, 
-						m->Model[0] ? m->Model : L"Generic", 
-						m->VendorId,    // "PHL"
-						m->ProductId,   // "C32C"
-						m->Year);
-		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-		
-		// Line 2: Show Resolution (Fallback to CurWidth if PhysWidth is 0)
-		if (m->PhysWidth > 0) {
-			len = wsprintfW(buf, L"  Resolution: %d x %d (Native: %d x %d)\r\n"
-							L"  Physical:   %d.%d Inch\r\n\r\n",
-							m->CurWidth, m->CurHeight,
-							m->PhysWidth, m->PhysHeight,
-							dWhole, dFrac);
-		} else {
-			// Now handles RDP/Virtual env where CurWidth is known but Phys is not
-			len = wsprintfW(buf, L"  Resolution: %d x %d (Virtual/Standard)\r\n", 
-							m->CurWidth, m->CurHeight);
-		}
-		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-		// Show physical size
-		if (m->Diagonal > 0.1f) {
-			int dWhole = (int)m->Diagonal;
-			int dFrac = (int)((m->Diagonal - (float)dWhole) * 10.0f);
-			len = wsprintfW(buf, L"  Physical Size: %d.%d Inch\r\n", dWhole, dFrac);
-			WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-		} else {
-			len = wsprintfW(buf, L"  Physical Size: Unknown (Virtual/RDP)\r\n");
-			WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-		}
-		
-		
-	}
-	
-	// Disk info
-	len = wsprintfW(buf, L"\r\n[Storage] Count: %d\r\n", report->DiskCount);
-	WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	
-	for (int i = 0; i < report->DiskCount; i++) {
-		// Calculate GB (using 1000 or 1024 based on preference, here 1024)
-		unsigned int sizeGB = (unsigned int)(report->Disks[i].TotalSizeByte / (1024 * 1024 * 1024));
-		
-		len = wsprintfW(buf, L"Disk %d: %s\r\n  Capacity: %u GB\r\n  S/N: %s\r\n", 
-						i + 1, report->Disks[i].Model, sizeGB, report->Disks[i].SerialNumber);
-		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	}
-	
-	// Nic info
-	len = wsprintfW(buf, L"\r\n[Network] Count: %d\r\n", report->NicCount);
-	WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	for (int i = 0; i < report->NicCount; i++) {
-		len = wsprintfW(buf, L"NIC %d: %s\r\n", i+1, report->Nics[i].Model);
-		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	}
-	
-	// Audio info
-	len = wsprintfW(buf, L"\r\n[Audio Hardware] Count: %d\r\n", report->AudioCount);
-	WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	
-	if (report->AudioCount == 0) {
-		len = wsprintfW(buf, L"Status: No physical audio hardware detected.\r\n");
-		WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	} else {
-		for (int i = 0; i < report->AudioCount; i++) {
-			// We use the 'Model' field we populated via SetupAPI
-			len = wsprintfW(buf, L"Device %d: %s\r\n", 
-							i + 1, 
-							report->Audios[i].Model);
-			WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-		}
-	}
-	WriteFile(hFile, L"\r\n", 2 * sizeof(WCHAR), &written, NULL);
-	
-	//time
-	WCHAR timeBuf[128];
-	int tWhole = (int)elapsedMilliseconds;
-	int tFrac = (int)((elapsedMilliseconds - (double)tWhole) * 100.0); // Two decimal places
-	
-	len = wsprintfW(buf, L"--------------------------------------\r\n");
-	WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	
-	len = wsprintfW(buf, L"Detection completed in: %d.%02d ms\r\n", tWhole, tFrac);
-	WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	
-	len = wsprintfW(buf, L"--------------------------------------\r\n");
-	WriteFile(hFile, buf, len * sizeof(WCHAR), &written, NULL);
-	
-	CloseHandle(hFile);
-}
-#endif
 
 void DemoOutput(HW_REPORT* report){
 	
+	for (int i=0;i<50;i++) putwchar(L'-');
+	wprintf(L"\r\n");
+	wprintf(L"CHWEngine SDK - C Demo\r\n");
+	for (int i=0;i<50;i++) putwchar(L'-');
+	wprintf(L"\r\n");
 	
 	// Motherboard info
-	wprintf(L"[Motherboard]\r\n");
+	wprintf(L"\r\n[Motherboard]\r\n");
 	for (int i = 0; i < report->BoardCount; i++){
 		const BOARD_INFO* board = &report->Boards[i];
 		wprintf(L"Make: %ls\r\n",board->Manufacturer);
@@ -250,6 +53,45 @@ void DemoOutput(HW_REPORT* report){
 		}
 		wprintf(L"GPU #%d: %ls (%uGB / %ls)\r\n",i,gpu->Model,vramGB,gpu->SubVendor[0] ? gpu->SubVendor : gpu->SubVenId);
 	}
+	
+	// Monitor info
+	wprintf(L"\r\n[Monitor] Count: %d\r\n",report->MonitorCount);
+	for (int i=0;i<report->MonitorCount;i++){
+		const MONITOR_INFO* mon = &report->Monitors[i];
+		int dWhole;
+		int dFrac;
+		if (mon->Diagonal > 0.1f){
+			dWhole = (int)mon->Diagonal;
+			dFrac = (int)((mon->Diagonal - (float)dWhole) * 10.0f);
+		}
+		wprintf(L"Monitor #%d: %ls %ls [%ls%ls] (%d) | %d x %d | %d.%d Inch\r\n",i,mon->VendorName,mon->Model,mon->VendorId,mon->ProductId,mon->Year,mon->CurWidth,mon->CurHeight,dWhole,dFrac);
+		
+	}
+	
+	// Storage info
+	wprintf(L"\r\n[Storage] Count: %d\r\n",report->DiskCount);
+	for (int i=0;i < report->DiskCount; i++){
+		const DISK_INFO* disk = &report->Disks[i];
+		unsigned int sizeGB = (unsigned int)(disk->TotalSizeByte / (1024 * 1024 * 1024));
+		wprintf(L"Disk #%d: %ls | %u GB\r\n",i,disk->Model,sizeGB);
+		
+	}
+	
+	// NIC info
+	wprintf(L"\r\n[NIC] Count: %d\r\n",report->NicCount);
+	for (int i=0;i<report->NicCount;i++){
+		const NIC_INFO* nic = &report->Nics[i];
+		wprintf(L"NIC #%d: %ls\r\n",i,nic->Model);
+		
+	}
+	
+	// Audio info
+	wprintf(L"\r\n[Audio] Count: %d\r\n",report->AudioCount);
+	for (int i=0;i<report->AudioCount;i++){
+		const AUDIO_INFO* audio = &report->Audios[i];
+		wprintf(L"Audio #%d: %ls\r\n",i,audio->Model);
+	}
+	
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
@@ -287,6 +129,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	elapsedMilliseconds = (double)(end.QuadPart - start.QuadPart) * 1000.0 / frequency.QuadPart;
 	
 	DemoOutput(&report);
+	
+	WCHAR timeBuf[128];
+	int tWhole = (int)elapsedMilliseconds;
+	int tFrac = (int)((elapsedMilliseconds - (double)tWhole) * 100.0);
+	
+	wprintf(L"\r\n");
+	for (int i=0;i<50;i++) putwchar(L'-');
+	wprintf(L"\r\n");
+	wprintf(L"Detection completed in: %d.%02d ms\r\n", tWhole, tFrac);
+	for (int i=0;i<50;i++) putwchar(L'-');
+	wprintf(L"\r\n");
+	
+	getchar();
+	
 	return 0;
 }
 
