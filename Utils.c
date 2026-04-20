@@ -2,6 +2,8 @@
 #include "Utils.h"
 #include "resource.h"
 #include "CHWEngine.h"
+#include <stdio.h>
+#include <wchar.h>
 
 #ifdef LOAD_CSV_FROM_FILE
 void Internal_MapIdNative(const WCHAR* csvName, const WCHAR* searchId, WCHAR* outBuffer, int maxLen) {
@@ -77,7 +79,8 @@ void Internal_MapIdFromResource(int resId, LPCWSTR searchId, LPWSTR outBuffer, i
 	HMODULE hMod = g_hEngineModule;
 	
 	// Default fallback if not found
-	lstrcpynW(outBuffer, L"Unknown", maxLen);
+	//lstrcpynW(outBuffer, L"Unknown", maxLen);
+	swprintf_s(outBuffer,_countof(outBuffer),L"Unknown(%s)",searchId);
 	
 	// 1. Locate the resource in the DLL's data segment
 	HRSRC hRes = FindResourceW(hMod, MAKEINTRESOURCEW(resId), (LPCWSTR)RT_RCDATA);

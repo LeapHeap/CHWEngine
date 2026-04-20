@@ -9,7 +9,7 @@
 #include "Utils.h"
 #include "resource.h"
 
-static void WmiArrayToWchar(VARIANT* v, WCHAR* dest, int maxLen) {
+static void WmiArrayToWchar(VARIANT* v, LPWSTR dest, int maxLen) {
 	long lBound, uBound;
 	SafeArrayGetLBound(v->parray, 1, &lBound);
 	SafeArrayGetUBound(v->parray, 1, &uBound);
@@ -30,7 +30,7 @@ static void WmiArrayToWchar(VARIANT* v, WCHAR* dest, int maxLen) {
 	dest[actualIdx] = L'\0';
 }
 
-static float GetMonitorSizeByInstance(const WCHAR* instanceName) {
+static float GetMonitorSizeByInstance(LPCWSTR instanceName) {
 	HKEY hKey;
 	WCHAR regPath[512];
 	
@@ -61,7 +61,7 @@ static float GetMonitorSizeByInstance(const WCHAR* instanceName) {
 }
 
 
-void Internal_ResolveVendorName(const WCHAR* vendorId, WCHAR* outName, int maxLen) {
+void Internal_ResolveVendorName(LPCWSTR vendorId, LPWSTR outName, int maxLen) {
 	Internal_MapIdFromResource(IDR_CSV_MONITORS, vendorId, outName, maxLen);
 }
 
@@ -99,7 +99,6 @@ void ProbeMonitorsWmi(HW_REPORT* report) {
 		if (SUCCEEDED(pclsObj->lpVtbl->Get(pclsObj, L"ManufacturerName", 0, &vtProp, 0, 0))) {
 			WmiArrayToWchar(&vtProp, mon->VendorId, 16); // e.g. "PHL"
 			VariantClear(&vtProp);
-			//lstrcpyW(mon->VendorName,GetVendorFullName(mon->VendorID));
 			Internal_ResolveVendorName(mon->VendorId,mon->VendorName,64);
 		}
 		
@@ -111,6 +110,7 @@ void ProbeMonitorsWmi(HW_REPORT* report) {
 		if (SUCCEEDED(pclsObj->lpVtbl->Get(pclsObj, L"UserFriendlyName", 0, &vtProp, 0, 0))) {
 			WmiArrayToWchar(&vtProp, mon->Model, 128); // e.g. "27M2N5810"
 			VariantClear(&vtProp);
+//			if(!mon->Model[0]) lstrcpynW(mon->Model,L"Unknown Model",_countof(mon->Model));
 		}
 		
 		if (SUCCEEDED(pclsObj->lpVtbl->Get(pclsObj, L"YearOfManufacture", 0, &vtProp, 0, 0))) {

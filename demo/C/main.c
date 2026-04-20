@@ -24,7 +24,7 @@ void DemoOutput(HW_REPORT* report){
 		wprintf(L"Make: %ls\r\n",board->Manufacturer);
 		wprintf(L"System name: %ls\r\n",board->SystemName);
 		wprintf(L"Model: %ls\r\n",board->Model);
-		wprintf(L"Chipset: %ls\r\n",board->ChipsetName[0] ? board->ChipsetName : board->ChipsetId);
+		wprintf(L"Chipset: %ls\r\n",board->ChipsetName[0] ? board->ChipsetName : L"Generic / Undetected");
 		wprintf(L"BIOS version: %ls\r\n",board->BiosVersion);
 		
 	}
@@ -47,11 +47,12 @@ void DemoOutput(HW_REPORT* report){
 	wprintf(L"\r\n[GPU] Count: %d\r\n",report->GpuCount);
 	for (int i = 0; i<report->GpuCount; i++){
 		const GPU_INFO* gpu = &report->Gpus[i];
-		unsigned int vramGB;
-		if (gpu->VRamSizeByte > 0 ){
-			vramGB = (unsigned int)(report->Gpus[i].VRamSizeByte / 1073741824);
+		double totalBytes = (double)gpu->VRamSizeByte;
+		if (totalBytes >= 1073741824.0){
+			wprintf(L"GPU #%d: %ls (%.1fGB / %ls)\r\n",i,gpu->Model,totalBytes / 1073741824.0,gpu->SubVendor[0] ? gpu->SubVendor : gpu->SubVenId);
+		} else {
+			wprintf(L"GPU #%d: %ls (%.0fMB / %ls)\r\n",i,gpu->Model,totalBytes / 1048576.0,gpu->SubVendor[0] ? gpu->SubVendor : gpu->SubVenId);
 		}
-		wprintf(L"GPU #%d: %ls (%uGB / %ls)\r\n",i,gpu->Model,vramGB,gpu->SubVendor[0] ? gpu->SubVendor : gpu->SubVenId);
 	}
 	
 	// Monitor info
@@ -64,7 +65,7 @@ void DemoOutput(HW_REPORT* report){
 			dWhole = (int)mon->Diagonal;
 			dFrac = (int)((mon->Diagonal - (float)dWhole) * 10.0f);
 		}
-		wprintf(L"Monitor #%d: %ls %ls [%ls%ls] (%d) | %d x %d | %d.%d Inch\r\n",i,mon->VendorName,mon->Model,mon->VendorId,mon->ProductId,mon->Year,mon->CurWidth,mon->CurHeight,dWhole,dFrac);
+		wprintf(L"Monitor #%d: %ls %ls [%ls%ls] (%d) | %d x %d | %d.%d Inch\r\n",i,mon->VendorName[0] ? mon->VendorName : L"Unknown Vendor",mon->Model[0] ? mon->Model : L"Unknown Model",mon->VendorId,mon->ProductId,mon->Year,mon->CurWidth,mon->CurHeight,dWhole,dFrac);
 		
 	}
 	

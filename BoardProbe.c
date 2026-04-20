@@ -135,10 +135,11 @@ BOOL ProbeBoardsAndRams(HW_REPORT* report) {
 		else if (type == 2) {
 			Internal_GetSmbiosString(pData, pData[4], board->Manufacturer, 64);
 			Internal_GetSmbiosString(pData, pData[5], board->Model, 64);
-			// Default value for chipset if not fetched
-			lstrcpynW(board->ChipsetId, L"Unknown",_countof(board->ChipsetId)); 
+			// This is deprecated since it must remain null if not fetched
+//			// Default value for chipset if not fetched
+//			lstrcpynW(board->ChipsetId, L"Unknown",_countof(board->ChipsetId)); 
 			Internal_GetPciChipsetId(board->ChipsetId, 16);
-			Internal_MapIdFromResource(IDR_CSV_CHIPSET, board->ChipsetId, board->ChipsetName, 128);
+			if(board->ChipsetId[0]) Internal_MapIdFromResource(IDR_CSV_CHIPSET, board->ChipsetId, board->ChipsetName, 128);
 			report->BoardCount++;
 		}
 		// Memory info
