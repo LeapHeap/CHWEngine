@@ -40,7 +40,7 @@ void DemoOutput(HW_REPORT* report){
 	wprintf(L"\r\n[RAM] Count: %d\r\n",report->RamCount);
 	for (int i=0;i<report->RamCount;i++){
 		const RAM_INFO* ram = &report->Rams[i];
-		wprintf(L"Slot #%d: %ls | %ls | %u MB | %u MT/s\r\n",i,ram->Manufacturer,ram->Type,ram->CapacityMb,ram->SpeedMts);
+		wprintf(L"Slot #%d: %ls | %ls | %u MB | %u MT/s\r\n",i,ram->Manufacturer,ram->Type[0] ? ram->Type : L"Generic / Undetected",ram->CapacityMb,ram->SpeedMts);
 	}
 	
 	// GPU info
