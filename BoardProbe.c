@@ -139,7 +139,7 @@ BOOL ProbeBoardsAndRams(HW_REPORT* report) {
 //			// Default value for chipset if not fetched
 //			lstrcpynW(board->ChipsetId, L"Unknown",_countof(board->ChipsetId)); 
 			Internal_GetPciChipsetId(board->ChipsetId, 16);
-			if(board->ChipsetId[0]) Internal_MapIdFromResource(IDR_CSV_CHIPSET, board->ChipsetId, board->ChipsetName, 128);
+			Internal_MapIdFromResource(IDR_CSV_CHIPSET, board->ChipsetId, board->ChipsetName, 128);
 			report->BoardCount++;
 		}
 		// Memory info

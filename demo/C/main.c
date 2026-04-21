@@ -25,6 +25,7 @@ void DemoOutput(HW_REPORT* report){
 		wprintf(L"System name: %ls\r\n",board->SystemName);
 		wprintf(L"Model: %ls\r\n",board->Model);
 		wprintf(L"Chipset: %ls\r\n",board->ChipsetName[0] ? board->ChipsetName : L"Generic / Undetected");
+		//wprintf(L"Chipset ID: %ls\r\n",board->ChipsetId);
 		wprintf(L"BIOS version: %ls\r\n",board->BiosVersion);
 		
 	}

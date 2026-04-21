@@ -75,69 +75,60 @@ void Internal_MapIdNative(const WCHAR* csvName, const WCHAR* searchId, WCHAR* ou
 #endif
 
 void Internal_MapIdFromResource(int resId, LPCWSTR searchId, LPWSTR outBuffer, int maxLen) {
-	//HMODULE hMod = GetModuleHandleW(L"CHWEngine.dll");
 	HMODULE hMod = g_hEngineModule;
+	BOOL found = FALSE;
 	
-	// Default fallback if not found
-	//lstrcpynW(outBuffer, L"Unknown", maxLen);
-	swprintf_s(outBuffer,_countof(outBuffer),L"Unknown(%s)",searchId);
-	
-	// 1. Locate the resource in the DLL's data segment
+	// Try locating and loading resource
 	HRSRC hRes = FindResourceW(hMod, MAKEINTRESOURCEW(resId), (LPCWSTR)RT_RCDATA);
-	if (!hRes) return;
-	
-	DWORD size = SizeofResource(hMod, hRes);
-	HGLOBAL hData = LoadResource(hMod, hRes);
-	const char* pBase = (const char*)LockResource(hData);
-	if (!pBase || size == 0) return;
-	
-	// 2. Convert searchId (Wide) to ANSI for memory comparison
-	char targetA[16];
-	WideCharToMultiByte(CP_ACP, 0, searchId, -1, targetA, sizeof(targetA), NULL, NULL);
-	int targetLen = lstrlenA(targetA);
-	
-	// 3. Scan memory buffer
-	const char* pPtr = pBase;
-	const char* pEnd = pBase + size;
-	
-	while (pPtr < pEnd) {
-		// Find the end of the current line
-		const char* lineEnd = pPtr;
-		while (lineEnd < pEnd && *lineEnd != '\r' && *lineEnd != '\n') {
-			lineEnd++;
-		}
+	if (hRes) {
+		DWORD size = SizeofResource(hMod, hRes);
+		HGLOBAL hData = LoadResource(hMod, hRes);
+		const char* pBase = (const char*)LockResource(hData);
 		
-		int lineLen = (int)(lineEnd - pPtr);
-		
-		// Check if line starts with targetA followed by a comma
-		// CSV Format: 7A84,Intel Z690
-		if (lineLen > targetLen && pPtr[targetLen] == ',') {
-			BOOL match = TRUE;
-			for (int i = 0; i < targetLen; i++) {
-				if (pPtr[i] != targetA[i]) {
-					match = FALSE;
-					break;
-				}
-			}
+		if (pBase && size > 0) {
+			// Convert searchId for memory scanning
+			char targetA[16];
+			WideCharToMultiByte(CP_ACP, 0, searchId, -1, targetA, sizeof(targetA), NULL, NULL);
+			int targetLen = lstrlenA(targetA);
 			
-			if (match) {
-				const char* valStart = pPtr + targetLen + 1;
-				int valLen = (int)(lineEnd - valStart);
+			const char* pPtr = pBase;
+			const char* pEnd = pBase + size;
+			
+			while (pPtr < pEnd) {
+				const char* lineEnd = pPtr;
+				while (lineEnd < pEnd && *lineEnd != '\r' && *lineEnd != '\n') lineEnd++;
 				
-				if (valLen > 0) {
-					// Convert UTF-8 CSV content to Wide String for the GUI/Report
-					int converted = MultiByteToWideChar(CP_UTF8, 0, valStart, valLen, outBuffer, maxLen - 1);
-					outBuffer[converted] = L'\0';
+				int lineLen = (int)(lineEnd - pPtr);
+				
+				// "ID,Name"
+				if (lineLen > targetLen && pPtr[targetLen] == ',') {
+					if (memcmp(pPtr, targetA, targetLen) == 0) {
+						const char* valStart = pPtr + targetLen + 1;
+						int valLen = (int)(lineEnd - valStart);
+						
+						if (valLen > 0) {
+							int converted = MultiByteToWideChar(CP_UTF8, 0, valStart, valLen, outBuffer, maxLen - 1);
+							outBuffer[converted] = L'\0';
+							found = TRUE; // Found
+						}
+						break;
+					}
 				}
-				return; // Match found, exit function
+				// Move to next line
+				pPtr = lineEnd;
+				while (pPtr < pEnd && (*pPtr == '\r' || *pPtr == '\n')) pPtr++;
 			}
 		}
-		
-		// Move to the start of the next line
-		pPtr = lineEnd;
-		while (pPtr < pEnd && (*pPtr == '\r' || *pPtr == '\n')) {
-			pPtr++;
+	}
+	
+	// Fallback
+	if (!found) {
+		if (searchId && searchId[0]) {
+			swprintf_s(outBuffer, maxLen, L"Unknown (%s)", searchId);
 		}
+//		} else {
+//			lstrcpynW(outBuffer, L"Generic / Undetected", maxLen);
+//		}
 	}
 }
 
