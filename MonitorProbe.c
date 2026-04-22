@@ -237,28 +237,27 @@ void ProbeMonitors(HW_REPORT* report) {
 #endif
 
 void ExtractVendorIdFromEdid(const BYTE* edid, WCHAR* outVendorId) {
-	// EDID 0x08-0x09 存储的是 3 个 5-bit 的字符
+	// 0x08-0x09 in EDID store three 5-bit char
 	char id[4];
 	id[0] = ((edid[0x08] & 0x7C) >> 2) + 64;
 	id[1] = (((edid[0x08] & 0x03) << 3) | ((edid[0x09] & 0xE0) >> 5)) + 64;
 	id[2] = (edid[0x09] & 0x1F) + 64;
 	id[3] = '\0';
 	
-	// 转换为宽字符
+	// Convert to wchar
 	swprintf_s(outVendorId, 8, L"%hs", id);
 }
 
 void ExtractModelNameFromEdid(const BYTE* edid, WCHAR* outModel, int maxLen) {
-	// 检查 4 个描述符槽位
+	// 4 description bits
 	for (int i = 0; i < 4; i++) {
 		int offset = 0x36 + (i * 18);
-		// 如果前两个字节是 00 00，且第 4 个字节是 0xFC，说明是名称块
 		if (edid[offset] == 0x00 && edid[offset + 1] == 0x00 && edid[offset + 3] == 0xFC) {
 			char tempName[14];
 			memcpy(tempName, &edid[offset + 5], 13);
 			tempName[13] = '\0';
 			
-			// 清理末尾的换行符 (0x0A)
+			// Clean return (0x0A)
 			for(int j=0; j<13; j++) if(tempName[j] == 0x0A) tempName[j] = '\0';
 			
 			MultiByteToWideChar(CP_ACP, 0, tempName, -1, outModel, maxLen);
@@ -268,51 +267,41 @@ void ExtractModelNameFromEdid(const BYTE* edid, WCHAR* outModel, int maxLen) {
 }
 
 void ExtractProductIdFromEdid(const BYTE* edid, WCHAR* outProductId) {
-	// EDID 0x0A 和 0x0B 是 Product Code (Little Endian)
-	// 我们按照 16 进制格式化输出，通常显示器厂商喜欢用大写 16 进制
 	swprintf_s(outProductId, 16, L"%02X%02X", edid[0x0B], edid[0x0A]);
 }
 
 void ExtractPhysicalResolutionFromEdid(const BYTE* edid, int* physWidth, int* physHeight) {
+	// Vibed code
+	
 	int offset = 0x36;
 	if (edid[offset] == 0 && edid[offset + 1] == 0) return;
 	
-	// 1. 宽度计算（验证为准，保持原样）
 	int h_act_lo = edid[offset + 2];
 	int h_blank_lo = edid[offset + 3];
 	int h_mixed = edid[offset + 4];
 	*physWidth = h_act_lo | ((h_mixed & 0xF0) << 4);
 	
-	// 2. 高度计算：采用“双路交叉校验法”
-	// 第一路：直接读取 Active 像素
+	// First try: read active pixels
 	int v_act_lo = edid[offset + 5];
-	int v_mixed = edid[offset + 7]; // Byte 0x3D 包含高度的高位掩码
+	int v_mixed = edid[offset + 7]; // Byte 0x3D includes hi-mask consisting height
 	
-	// 根据 VESA 1.4 标准：
-	// offset+4 (0x3A) 的低 4 位是 V-Active 的高 4 位 (bit 0-3)
-	// 但很多固件在这里有 Bug。我们引入 offset+7 (0x3D) 的特征。
+	// V-Active in offset+7 (0x3D)
 	
 	int v_act_hi = (edid[offset + 4] & 0x0F) << 8;
 	int h_raw = v_act_lo | v_act_hi;
-	
-	// 3. 零硬编码动态纠偏逻辑
-	// 利用 EDID 0x15/0x16 的物理尺寸（cm）
+
+	// Physical size in centimeters in EDID 0x15/0x16
 	float w_cm = (float)edid[0x15];
 	float h_cm = (float)edid[0x16];
 	
 	if (w_cm > 0 && h_cm > 0) {
 		float ratio = w_cm / h_cm;
-		// 计算预估高度（完全基于物理比例，不含任何标准值）
 		float estimated_h = (float)(*physWidth) / ratio;
-		
-		// 核心：由于 v_act_hi 是由 4 个 bit 组成的（0x0 到 0xF）
-		// 每一个 bit 代表 256 像素。
-		// 我们通过“位投票”找到最接近物理比例的那个 bit 组合。
 		
 		int best_h = h_raw;
 		float min_diff = 999999.0f;
 		
-		// 遍历所有可能的 4-bit 高位组合 (0-15)
+		// Go through all possible 4-bit high combinations (0-15)
 		for (int bit = 0; bit < 16; bit++) {
 			int test_h = v_act_lo | (bit << 8);
 			if (test_h == 0) continue;
@@ -324,8 +313,6 @@ void ExtractPhysicalResolutionFromEdid(const BYTE* edid, int* physWidth, int* ph
 			}
 		}
 		
-		// 现在的 best_h 是完全基于物理比例（cm）和 EDID 低 8 位（Byte 0x3B）组合出的
-		// 最符合物理现实的分辨率。
 		h_raw = best_h;
 	}
 	
@@ -344,9 +331,8 @@ void ProbeMonitors(HW_REPORT* report) {
 		int actualIdx = 0;
 		for (UINT32 i = 0; i < pathCount && actualIdx < 4; i++) {
 			MONITOR_INFO* mon = &report->Monitors[actualIdx];
-			memset(mon, 0, sizeof(MONITOR_INFO)); // 核心：彻底杜绝负数乱码
+			ZeroMemory(mon,sizeof(MONITOR_INFO));
 			
-			// 1. 获取基础信息 (型号, ID, 年份)
 			DISPLAYCONFIG_TARGET_DEVICE_NAME targetName = { 0 };
 			targetName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
 			targetName.header.size = sizeof(targetName);
@@ -355,25 +341,23 @@ void ProbeMonitors(HW_REPORT* report) {
 			
 			if (DisplayConfigGetDeviceInfo(&targetName.header) == ERROR_SUCCESS) {
 				if (targetName.flags.friendlyNameFromEdid && targetName.monitorFriendlyDeviceName[0] != 0) {
-					lstrcpynW(mon->Model, targetName.monitorFriendlyDeviceName, 128);
+					lstrcpynW(mon->Model, targetName.monitorFriendlyDeviceName, _countof(mon->Model));
 				} else {
-					lstrcpynW(mon->Model, L"Generic Fixed Stack Display", 128);
+					lstrcpynW(mon->Model, L"Generic Fixed Stack Display", _countof(mon->Model));
 				}
 				
-				// 修正年份：edidManufactureId 在旧 SDK 中通常需要位运算提取
-				// 或者我们可以等待后面的 EDID 解析来覆盖它
+				// Use bitwise operation to extract edidManufactureId
 				mon->Year = (int)targetName.edidManufactureId; 
-				swprintf_s(mon->ProductId, 16, L"%04X", targetName.edidProductCodeId);
+				swprintf_s(mon->ProductId, _countof(mon->ProductId), L"%04X", targetName.edidProductCodeId);
 			}
 			
-			// 2. 获取分辨率
 			UINT32 mIdx = paths[i].targetInfo.targetModeInfoIdx;
 			if (mIdx < modeCount) {
 				mon->CurWidth = modes[mIdx].targetMode.targetVideoSignalInfo.activeSize.cx;
 				mon->CurHeight = modes[mIdx].targetMode.targetVideoSignalInfo.activeSize.cy;
 			}
 			
-			// 3. 获取物理尺寸 (Diagonal) - 通过物理路径去注册表拉取真正的 EDID
+			// Size
 			DISPLAYCONFIG_TARGET_DEVICE_NAME_FLAGS flags = targetName.flags;
 			DISPLAYCONFIG_DEVICE_INFO_HEADER devicePathHeader = { 0 };
 			DISPLAYCONFIG_TARGET_DEVICE_NAME devicePathName = { 0 };
@@ -383,9 +367,6 @@ void ProbeMonitors(HW_REPORT* report) {
 			devicePathName.header.id = paths[i].targetInfo.id;
 			
 			if (DisplayConfigGetDeviceInfo(&devicePathName.header) == ERROR_SUCCESS) {
-				// 利用设备路径去寻找 EDID 键
-				// 如果路径太复杂，这里用一个最稳健的办法：
-				// 再次枚举驱动键，但这次有了正确的 Target ID 匹配
 				HDEVINFO devInfo = SetupDiGetClassDevsW(&GUID_DEVCLASS_MONITOR, NULL, NULL, DIGCF_PRESENT);
 				if (devInfo != INVALID_HANDLE_VALUE) {
 					SP_DEVINFO_DATA devData = { sizeof(devData) };
@@ -400,23 +381,19 @@ void ProbeMonitors(HW_REPORT* report) {
 //								wsprintfW(testmsg,L"RAW EDID 3A: %02X, 3B: %02X, 38: %02X\n", edid[0x3A], edid[0x3B], edid[0x38]);
 //								MessageBoxW(NULL,testmsg,L"edid",MB_OK);
 								
-								// 1. 拿年份
 								mon->Year = edid[0x11] + 1990;
 								
-								// 2. 拿厂商代号 (如 PHL)
 								ExtractVendorIdFromEdid(edid, mon->VendorId);
-								// 拿着 VendorId 去跑你之前的映射逻辑，拿到 "Philips"
 								Internal_ResolveVendorName(mon->VendorId, mon->VendorName, 64);
 								
-								// 3. 拿精确型号 (如 27M2N5810)
-								// 如果 QueryDisplayConfig 拿到的 Model 是 Generic，我们就用 EDID 里的覆盖它
+
 								WCHAR edidModel[64] = {0};
 								ExtractModelNameFromEdid(edid, edidModel, 64);
 								if (edidModel[0] != 0) {
-									lstrcpynW(mon->Model, edidModel, 128);
+									lstrcpynW(mon->Model, edidModel, _countof(mon->Model));
 								}
 								
-								// 4. 算尺寸
+								// Diagonal
 								float w = (float)edid[0x15];
 								float h = (float)edid[0x16];
 								if (w > 0 && h > 0) {
@@ -427,22 +404,7 @@ void ProbeMonitors(HW_REPORT* report) {
 								ExtractProductIdFromEdid(edid, mon->ProductId);
 								
 								// Physical resolution
-								int tempW = 0, tempH = 0;
-								ExtractPhysicalResolutionFromEdid(edid, &tempW, &tempH);
-								
-								// RDP 穿透策略：
-								// 如果当前正在处理的这个 EDID 块解析出了 3840，直接采纳它
-								// 因为虚拟 RDP 显示器绝不会有 3840x2160 的物理 EDID 块
-								if (tempW >= 1920) { 
-									mon->PhysWidth = tempW;
-									mon->PhysHeight = tempH;
-									
-									// 顺便把之前缺失的信息也在这里补齐，因为这个 EDID 是真的
-									mon->Year = edid[0x11] + 1990;
-									float fw = (float)edid[0x15];
-									float fh = (float)edid[0x16];
-									if (fw > 0 && fh > 0) mon->Diagonal = sqrtf(fw*fw + fh*fh) / 2.54f;
-								}
+								ExtractPhysicalResolutionFromEdid(edid, &mon->PhysWidth, &mon->PhysHeight);
 							}
 							RegCloseKey(hKey);
 						}
