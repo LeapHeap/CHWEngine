@@ -153,6 +153,8 @@ X(ProductId,ProductId, ) \
 #define MONITOR_VAL_FIELDS \
 X(CurWidth,CurWidth,int, ) \
 X(CurHeight,CurHeight,int, ) \
+X(PhysWidth,PhysWidth,int, ) \
+X(PhysHeight,PhysHeight,int, ) \
 X(Diagonal,Diagonal,float, ) \
 X(Year,Year,int, ) \
 

@@ -44,11 +44,11 @@ UseUTF8 = 1
 
 
 [Unit1]
-FileName = resource.h
+FileName = Utils.c
 CompileCpp = 0
-Folder = Headers
-Compile = 0
-Link = 0
+Folder = Sources
+Compile = 1
+Link = 1
 Priority = 1000
 OverrideBuildCmd = 0
 BuildCmd = 
@@ -57,11 +57,11 @@ RealEncoding = UTF-8
 
 
 [Unit2]
-FileName = AudioProbe.c
+FileName = CHWInterface.h
 CompileCpp = 0
-Folder = Sources
-Compile = 1
-Link = 1
+Folder = Headers
+Compile = 0
+Link = 0
 Priority = 1000
 OverrideBuildCmd = 0
 BuildCmd = 
@@ -90,10 +90,10 @@ SyncProduct = 1
 
 
 [Unit3]
-FileName = resource.rc
+FileName = CHWEngine.h
 CompileCpp = 0
-Folder = Resources
-Compile = 1
+Folder = Headers
+Compile = 0
 Link = 0
 Priority = 1000
 OverrideBuildCmd = 0
@@ -103,45 +103,6 @@ RealEncoding = ASCII
 
 
 [Unit4]
-FileName = Utils.h
-CompileCpp = 0
-Folder = Headers
-Compile = 0
-Link = 0
-Priority = 1000
-OverrideBuildCmd = 0
-BuildCmd = 
-FileEncoding = PROJECT
-RealEncoding = UTF-8
-
-
-[Unit5]
-FileName = PciProbe.c
-CompileCpp = 0
-Folder = Sources
-Compile = 1
-Link = 1
-Priority = 1000
-OverrideBuildCmd = 0
-BuildCmd = 
-FileEncoding = PROJECT
-RealEncoding = UTF-8
-
-
-[Unit6]
-FileName = CpuProbe.h
-CompileCpp = 0
-Folder = Headers
-Compile = 0
-Link = 0
-Priority = 1000
-OverrideBuildCmd = 0
-BuildCmd = 
-FileEncoding = PROJECT
-RealEncoding = UTF-8
-
-
-[Unit7]
 FileName = DiskProbe.h
 CompileCpp = 0
 Folder = Headers
@@ -154,25 +115,12 @@ FileEncoding = PROJECT
 RealEncoding = UTF-8
 
 
-[Unit8]
-FileName = dllmain.c
+[Unit5]
+FileName = resource.rc
 CompileCpp = 0
-Folder = Sources
+Folder = Resources
 Compile = 1
-Link = 1
-Priority = 1000
-OverrideBuildCmd = 0
-BuildCmd = 
-FileEncoding = PROJECT
-RealEncoding = UTF-8
-
-
-[Unit9]
-FileName = Utils.c
-CompileCpp = 0
-Folder = Sources
-Compile = 1
-Link = 1
+Link = 0
 Priority = 1000
 OverrideBuildCmd = 0
 BuildCmd = 
@@ -180,46 +128,7 @@ FileEncoding = PROJECT
 RealEncoding = ASCII
 
 
-[Unit10]
-FileName = CHWInterface.c
-CompileCpp = 0
-Folder = Sources
-Compile = 1
-Link = 1
-Priority = 1000
-OverrideBuildCmd = 0
-BuildCmd = 
-FileEncoding = PROJECT
-RealEncoding = UTF-8
-
-
-[Unit11]
-FileName = DiskProbe.c
-CompileCpp = 0
-Folder = Sources
-Compile = 1
-Link = 1
-Priority = 1000
-OverrideBuildCmd = 0
-BuildCmd = 
-FileEncoding = PROJECT
-RealEncoding = UTF-8
-
-
-[Unit12]
-FileName = BoardProbe.h
-CompileCpp = 0
-Folder = Headers
-Compile = 0
-Link = 0
-Priority = 1000
-OverrideBuildCmd = 0
-BuildCmd = 
-FileEncoding = PROJECT
-RealEncoding = UTF-8
-
-
-[Unit13]
+[Unit6]
 FileName = CpuProbe.c
 CompileCpp = 0
 Folder = Sources
@@ -232,46 +141,7 @@ FileEncoding = PROJECT
 RealEncoding = UTF-8
 
 
-[Unit14]
-FileName = PCIProbe.h
-CompileCpp = 0
-Folder = Headers
-Compile = 0
-Link = 0
-Priority = 1000
-OverrideBuildCmd = 0
-BuildCmd = 
-FileEncoding = PROJECT
-RealEncoding = UTF-8
-
-
-[Unit15]
-FileName = AudioProbe.h
-CompileCpp = 0
-Folder = Headers
-Compile = 0
-Link = 0
-Priority = 1000
-OverrideBuildCmd = 0
-BuildCmd = 
-FileEncoding = PROJECT
-RealEncoding = UTF-8
-
-
-[Unit16]
-FileName = MonitorProbe.c
-CompileCpp = 0
-Folder = Sources
-Compile = 1
-Link = 1
-Priority = 1000
-OverrideBuildCmd = 0
-BuildCmd = 
-FileEncoding = PROJECT
-RealEncoding = UTF-8
-
-
-[Unit17]
+[Unit7]
 FileName = MonitorProbe.h
 CompileCpp = 0
 Folder = Headers
@@ -284,7 +154,7 @@ FileEncoding = PROJECT
 RealEncoding = UTF-8
 
 
-[Unit18]
+[Unit8]
 FileName = BoardProbe.c
 CompileCpp = 0
 Folder = Sources
@@ -294,11 +164,24 @@ Priority = 1000
 OverrideBuildCmd = 0
 BuildCmd = 
 FileEncoding = PROJECT
-RealEncoding = ASCII
+RealEncoding = UTF-8
 
 
-[Unit19]
-FileName = CHWInterface.h
+[Unit9]
+FileName = DiskProbe.c
+CompileCpp = 0
+Folder = Sources
+Compile = 1
+Link = 1
+Priority = 1000
+OverrideBuildCmd = 0
+BuildCmd = 
+FileEncoding = PROJECT
+RealEncoding = UTF-8
+
+
+[Unit10]
+FileName = PCIProbe.h
 CompileCpp = 0
 Folder = Headers
 Compile = 0
@@ -310,12 +193,129 @@ FileEncoding = PROJECT
 RealEncoding = UTF-8
 
 
-[Unit20]
-FileName = CHWEngine.h
+[Unit11]
+FileName = Utils.h
 CompileCpp = 0
 Folder = Headers
 Compile = 0
 Link = 0
+Priority = 1000
+OverrideBuildCmd = 0
+BuildCmd = 
+FileEncoding = PROJECT
+RealEncoding = UTF-8
+
+
+[Unit12]
+FileName = AudioProbe.c
+CompileCpp = 0
+Folder = Sources
+Compile = 1
+Link = 1
+Priority = 1000
+OverrideBuildCmd = 0
+BuildCmd = 
+FileEncoding = PROJECT
+RealEncoding = UTF-8
+
+
+[Unit13]
+FileName = dllmain.c
+CompileCpp = 0
+Folder = Sources
+Compile = 1
+Link = 1
+Priority = 1000
+OverrideBuildCmd = 0
+BuildCmd = 
+FileEncoding = PROJECT
+RealEncoding = UTF-8
+
+
+[Unit14]
+FileName = CpuProbe.h
+CompileCpp = 0
+Folder = Headers
+Compile = 0
+Link = 0
+Priority = 1000
+OverrideBuildCmd = 0
+BuildCmd = 
+FileEncoding = PROJECT
+RealEncoding = UTF-8
+
+
+[Unit15]
+FileName = resource.h
+CompileCpp = 0
+Folder = Headers
+Compile = 0
+Link = 0
+Priority = 1000
+OverrideBuildCmd = 0
+BuildCmd = 
+FileEncoding = PROJECT
+RealEncoding = UTF-8
+
+
+[Unit16]
+FileName = PciProbe.c
+CompileCpp = 0
+Folder = Sources
+Compile = 1
+Link = 1
+Priority = 1000
+OverrideBuildCmd = 0
+BuildCmd = 
+FileEncoding = PROJECT
+RealEncoding = UTF-8
+
+
+[Unit17]
+FileName = AudioProbe.h
+CompileCpp = 0
+Folder = Headers
+Compile = 0
+Link = 0
+Priority = 1000
+OverrideBuildCmd = 0
+BuildCmd = 
+FileEncoding = PROJECT
+RealEncoding = UTF-8
+
+
+[Unit18]
+FileName = BoardProbe.h
+CompileCpp = 0
+Folder = Headers
+Compile = 0
+Link = 0
+Priority = 1000
+OverrideBuildCmd = 0
+BuildCmd = 
+FileEncoding = PROJECT
+RealEncoding = UTF-8
+
+
+[Unit19]
+FileName = MonitorProbe.c
+CompileCpp = 0
+Folder = Sources
+Compile = 1
+Link = 1
+Priority = 1000
+OverrideBuildCmd = 0
+BuildCmd = 
+FileEncoding = PROJECT
+RealEncoding = ASCII
+
+
+[Unit20]
+FileName = CHWInterface.c
+CompileCpp = 0
+Folder = Sources
+Compile = 1
+Link = 1
 Priority = 1000
 OverrideBuildCmd = 0
 BuildCmd = 

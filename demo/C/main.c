@@ -61,11 +61,13 @@ void DemoOutput(HW_REPORT* report){
 	wprintf(L"\r\n[Monitor] Count: %d\r\n",report->MonitorCount);
 	for (int i=0;i<report->MonitorCount;i++){
 		const MONITOR_INFO* mon = &report->Monitors[i];
-		int dWhole;
-		int dFrac;
-		if (mon->Diagonal > 0.1f){
-			dWhole = (int)mon->Diagonal;
-			dFrac = (int)((mon->Diagonal - (float)dWhole) * 10.0f);
+		int dWhole = 0;
+		int dFrac = 0;
+		if (mon->Diagonal > 0.1f) {
+			// Rounding
+			float roundedDiagonal = mon->Diagonal + 0.05f; 
+			dWhole = (int)roundedDiagonal;
+			dFrac = (int)((roundedDiagonal - (float)dWhole) * 10.0f);
 		}
 		wprintf(L"Monitor #%d: %ls %ls [%ls%ls] (%d) | %d x %d | %d.%d Inch\r\n",i,mon->VendorName,mon->Model[0] ? mon->Model : L"Unknown Model",mon->VendorId,mon->ProductId,mon->Year,mon->PhysWidth,mon->PhysHeight,dWhole,dFrac);
 		

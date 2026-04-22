@@ -30,7 +30,7 @@ RAM #1: KingBank | DDR5 | 16384 MB | 6000 MT/s
 GPU #0: NVIDIA GeForce RTX 5070 Ti (15.6GB / PALIT)
 
 [Monitor] Count: 1
-Monitor #0: Philips 27M2N5810 [PHLC32C] (2024) | 3840 x 2160 | 27.1 Inch
+Monitor #0: Philips 27M2N5810 [PHLC32C] (2024) | 3840 x 2160 | 27.2 Inch
 
 [Storage] Count: 2
 Disk #0: KIOXIA-EXCERIA PLUS G3 SSD | 931 GB
@@ -50,7 +50,7 @@ Audio #5: Realtek USB Audio
 Audio #6: Sonic Studio Virtual Mixer
 
 --------------------------------------------------
-Detection completed in: 5.96 ms
+Detection completed in: 6.57 ms
 --------------------------------------------------
 ```
 
