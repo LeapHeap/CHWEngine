@@ -18,15 +18,16 @@ void DemoOutput(HW_REPORT* report){
 	wprintf(L"\r\n");
 	
 	// Motherboard info
-	wprintf(L"\r\n[Motherboard]\r\n");
+	wprintf(L"\r\n[Motherboard] Count: %d\r\n",report->BoardCount);
 	for (int i = 0; i < report->BoardCount; i++){
 		const BOARD_INFO* board = &report->Boards[i];
-		wprintf(L"Make: %ls\r\n",board->Manufacturer);
-		wprintf(L"System name: %ls\r\n",board->SystemName);
-		wprintf(L"Model: %ls\r\n",board->Model);
-		wprintf(L"Chipset: %ls\r\n",board->ChipsetName[0] ? board->ChipsetName : L"Generic / Undetected");
+		wprintf(L"Board #%d:\r\n",i);
+		wprintf(L"  Manufacturer: %ls\r\n",board->Manufacturer);
+		wprintf(L"  System Model: %ls\r\n",board->SystemName);
+		wprintf(L"  Board Model:  %ls\r\n",board->Model);
+		wprintf(L"  Chipset:      %ls\r\n",board->ChipsetName);
 		//wprintf(L"Chipset ID: %ls\r\n",board->ChipsetId);
-		wprintf(L"BIOS version: %ls\r\n",board->BiosVersion);
+		wprintf(L"  BIOS:         %ls\r\n",board->BiosVersion);
 		
 	}
 	
@@ -41,7 +42,7 @@ void DemoOutput(HW_REPORT* report){
 	wprintf(L"\r\n[RAM] Count: %d\r\n",report->RamCount);
 	for (int i=0;i<report->RamCount;i++){
 		const RAM_INFO* ram = &report->Rams[i];
-		wprintf(L"Slot #%d: %ls | %ls | %u MB | %u MT/s\r\n",i,ram->Manufacturer,ram->Type[0] ? ram->Type : L"Generic / Undetected",ram->CapacityMb,ram->SpeedMts);
+		wprintf(L"RAM #%d: %ls | %ls | %u MB | %u MT/s\r\n",i,ram->Manufacturer,ram->Type,ram->CapacityMb,ram->SpeedMts);
 	}
 	
 	// GPU info

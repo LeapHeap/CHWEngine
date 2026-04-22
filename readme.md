@@ -11,19 +11,20 @@ A Win32 C library for hardware information. Lightweight and fast. Built using De
 CHWEngine SDK - C Demo
 --------------------------------------------------
 
-[Motherboard]
-Make: ASUSTeK COMPUTER INC.
-System name: System Product Name
-Model: ROG MAXIMUS Z690 HERO
-Chipset: Intel Z690 Chipset
-BIOS version: 4301
+[Motherboard] Count: 1
+Board #0:
+  Manufacturer: ASUSTeK COMPUTER INC.
+  System Model: System Product Name
+  Board Model:  ROG MAXIMUS Z690 HERO
+  Chipset:      Intel Z690 Chipset
+  BIOS:         4301
 
 [CPU] Count: 1
 Socket #0: 12th Gen Intel(R) Core(TM) i9-12900KS | 16C24T
 
 [RAM] Count: 2
-Slot #0: KingBank | DDR5 | 16384 MB | 6000 MT/s
-Slot #1: KingBank | DDR5 | 16384 MB | 6000 MT/s
+RAM #0: KingBank | DDR5 | 16384 MB | 6000 MT/s
+RAM #1: KingBank | DDR5 | 16384 MB | 6000 MT/s
 
 [GPU] Count: 1
 GPU #0: NVIDIA GeForce RTX 5070 Ti (15.6GB / PALIT)
@@ -49,7 +50,7 @@ Audio #5: Realtek USB Audio
 Audio #6: Sonic Studio Virtual Mixer
 
 --------------------------------------------------
-Detection completed in: 22.74 ms
+Detection completed in: 5.96 ms
 --------------------------------------------------
 ```
 
