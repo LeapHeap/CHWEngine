@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include "../../CHWEngine.h"
 
-#define PROBMONWMI
-//#define PROBMON
+//#define PROBMONWMI
+#define PROBMON
 
 
 double elapsedMilliseconds;
@@ -50,9 +50,9 @@ void DemoOutput(HW_REPORT* report){
 		const GPU_INFO* gpu = &report->Gpus[i];
 		double totalBytes = (double)gpu->VRamSizeByte;
 		if (totalBytes >= 1073741824.0){
-			wprintf(L"GPU #%d: %ls (%.1fGB / %ls)\r\n",i,gpu->Model,totalBytes / 1073741824.0,gpu->SubVendor[0] ? gpu->SubVendor : gpu->SubVenId);
+			wprintf(L"GPU #%d: %ls (%.1fGB / %ls)\r\n",i,gpu->Model,totalBytes / 1073741824.0,gpu->SubVendor);
 		} else {
-			wprintf(L"GPU #%d: %ls (%.0fMB / %ls)\r\n",i,gpu->Model,totalBytes / 1048576.0,gpu->SubVendor[0] ? gpu->SubVendor : gpu->SubVenId);
+			wprintf(L"GPU #%d: %ls (%.0fMB / %ls)\r\n",i,gpu->Model,totalBytes / 1048576.0,gpu->SubVendor);
 		}
 	}
 	
@@ -66,7 +66,7 @@ void DemoOutput(HW_REPORT* report){
 			dWhole = (int)mon->Diagonal;
 			dFrac = (int)((mon->Diagonal - (float)dWhole) * 10.0f);
 		}
-		wprintf(L"Monitor #%d: %ls %ls [%ls%ls] (%d) | %d x %d | %d.%d Inch\r\n",i,mon->VendorName[0] ? mon->VendorName : L"Unknown Vendor",mon->Model[0] ? mon->Model : L"Unknown Model",mon->VendorId,mon->ProductId,mon->Year,mon->CurWidth,mon->CurHeight,dWhole,dFrac);
+		wprintf(L"Monitor #%d: %ls %ls [%ls%ls] (%d) | %d x %d | %d.%d Inch\r\n",i,mon->VendorName,mon->Model[0] ? mon->Model : L"Unknown Model",mon->VendorId,mon->ProductId,mon->Year,mon->PhysWidth,mon->PhysHeight,dWhole,dFrac);
 		
 	}
 	

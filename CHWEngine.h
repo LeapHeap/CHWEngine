@@ -108,6 +108,7 @@ typedef struct {
 #include "MonitorProbe.h"
 #include "PciProbe.h"
 
+//#define USE_WMI
 
 #define HW_STR_FIELDS \
 X(Cpu,Model,Model) \
@@ -144,12 +145,26 @@ X(Disk,TotalSizeByte,TotalSizeByte,UINT64) \
 
 #define MONITOR_STR_FIELDS \
 X(VendorName,VendorName,) \
+X(Model,Model,) \
+X(VendorId,VendorId,) \
+X(ProductId,ProductId, ) \
+
+
+#define MONITOR_VAL_FIELDS \
+X(CurWidth,CurWidth,int, ) \
+X(CurHeight,CurHeight,int, ) \
+X(Diagonal,Diagonal,float, ) \
+X(Year,Year,int, ) \
+
+#ifdef USE_WMI
+#define MONITOR_STR_FIELDS \
+X(VendorName,VendorName,) \
 X(VendorName,VendorName,Wmi) \
 X(Model,Model,) \
 X(Model,Model,Wmi) \
 X(VendorId,VendorId,) \
 X(VendorId,VendorId,Wmi) \
-X(ProductId,ProductId,Wmi) \
+X(ProductId,ProductId,Wmi)
 
 
 #define MONITOR_VAL_FIELDS \
@@ -158,7 +173,8 @@ X(CurWidth,CurWidth,int,Wmi) \
 X(CurHeight,CurHeight,int, ) \
 X(CurHeight,CurHeight,int,Wmi) \
 X(Diagonal,Diagonal,float,Wmi) \
-X(Year,Year,int,Wmi) \
+X(Year,Year,int,Wmi)
+#endif
 
 
 #include "CHWInterface.h"
