@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CHWEngine_Demo_CSharp", "CHWEngine_Demo_CSharp\CHWEngine_Demo_CSharp.csproj", "{6747C99F-30B1-405E-9FFB-D571682B7493}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6747C99F-30B1-405E-9FFB-D571682B7493}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6747C99F-30B1-405E-9FFB-D571682B7493}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6747C99F-30B1-405E-9FFB-D571682B7493}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6747C99F-30B1-405E-9FFB-D571682B7493}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {75296E87-51C9-4662-AE71-094466F979E4}
+	EndGlobalSection
+EndGlobal

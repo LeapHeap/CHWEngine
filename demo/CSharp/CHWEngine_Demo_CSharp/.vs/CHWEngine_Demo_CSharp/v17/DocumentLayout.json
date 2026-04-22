@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "F:\\_lzy_files\\lh_codes\\CHWEngine\\demo\\CSharp\\CHWEngine_Demo_CSharp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{6747C99F-30B1-405E-9FFB-D571682B7493}|CHWEngine_Demo_CSharp\\CHWEngine_Demo_CSharp.csproj|f:\\_lzy_files\\lh_codes\\chwengine\\demo\\csharp\\chwengine_demo_csharp\\chwengine_demo_csharp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6747C99F-30B1-405E-9FFB-D571682B7493}|CHWEngine_Demo_CSharp\\CHWEngine_Demo_CSharp.csproj|solutionrelative:chwengine_demo_csharp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "F:\\_lzy_files\\lh_codes\\CHWEngine\\demo\\CSharp\\CHWEngine_Demo_CSharp\\CHWEngine_Demo_CSharp\\Program.cs",
+              "RelativeDocumentMoniker": "CHWEngine_Demo_CSharp\\Program.cs",
+              "ToolTip": "F:\\_lzy_files\\lh_codes\\CHWEngine\\demo\\CSharp\\CHWEngine_Demo_CSharp\\CHWEngine_Demo_CSharp\\Program.cs",
+              "RelativeToolTip": "CHWEngine_Demo_CSharp\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAABgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-22T11:49:49.66Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
