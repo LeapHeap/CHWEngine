@@ -6,41 +6,41 @@ A Win32 C library for hardware information. Lightweight and fast. Built using De
 
 ### On a typical 12th Intel Core platform:
 
-* C: ~6ms
+* C/C++: ~6ms
 * Python (ctypes): ~10ms
 * C# (P/Invoke): ~15ms
 
 ## Supported Components
 
-| Component   | Field               |
-| ----------- | ------------------- |
-| CPU         | Model               |
-|             | Cores               |
-|             | Threads             |
-| Motherboard | Manufacturer        |
-|             | System Model        |
-|             | Model               |
-|             | Chipset             |
-|             | BIOS                |
-| RAM         | Manufacturer        |
-|             | Type                |
-|             | Capacity            |
-|             | Speed               |
-| GPU         | Vendor              |
-|             | Model               |
-|             | Sub-Vendor          |
-|             | VRAM Size           |
-| Disk        | Model               |
-|             | Total Size          |
-|             | Serial Number       |
-| Monitor     | Vendor              |
-|             | Model               |
-|             | Code                |
-|             | Desktop Resolution  |
-|             | Physical Resolution |
-|             | Diagonal Size       |
-| Audio       | Model               |
-| NIC         | Model               |
+| Component   | Field                      |
+| ----------- | -------------------------- |
+| CPU         | Model                      |
+|             | Cores                      |
+|             | Threads                    |
+| Motherboard | Manufacturer               |
+|             | System Model (System Name) |
+|             | Model                      |
+|             | Chipset                    |
+|             | BIOS                       |
+| RAM         | Manufacturer               |
+|             | Type                       |
+|             | Capacity                   |
+|             | Speed                      |
+| GPU         | Vendor                     |
+|             | Model                      |
+|             | Sub-Vendor                 |
+|             | VRAM Size                  |
+| Disk        | Model                      |
+|             | Total Size                 |
+|             | Serial Number              |
+| Monitor     | Vendor                     |
+|             | Model                      |
+|             | Code                       |
+|             | Desktop Resolution         |
+|             | Physical Resolution        |
+|             | Diagonal Size              |
+| Audio       | Model                      |
+| NIC         | Model                      |
 
 ## Database
 
@@ -48,7 +48,7 @@ The ID-Translation mapping databases for chipset, graphics, memory type and moni
 
 ## Exported APIs
 
-Both low-level direct probing functions and encapsulated getter functions are exported. Direct probing functions requires invoker to create a HW_REPORT structure in advance and call the functions to populate the structure, which is suitable for low-level programming using C/C++. Encapsulated functions either return numerical values directly or write wide-char encoded text data to the buffer passed in, which is suitable for most of the modern high-level languages like C# and Python. Detailed examples of the usage of the exported APIs are demonstrated in examples of supported programming languages in the SDK package.
+Both low-level direct probing functions and encapsulated getter functions are exported. Direct probing functions require invoker to create a HW_REPORT structure in advance and call the functions to populate the structure, which is suitable for low-level programming using C/C++. Encapsulated functions either return numerical values directly or write wide-char encoded text data to the buffer passed in, which is suitable for most of the modern high-level languages. Detailed examples of the usage of the exported APIs are demonstrated in examples of supported programming languages in the SDK package.
 
 ## Supported Programming Languages
 
