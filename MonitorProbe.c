@@ -343,7 +343,7 @@ void ProbeMonitors(HW_REPORT* report) {
 				if (targetName.flags.friendlyNameFromEdid && targetName.monitorFriendlyDeviceName[0] != 0) {
 					lstrcpynW(mon->Model, targetName.monitorFriendlyDeviceName, _countof(mon->Model));
 				} else {
-					lstrcpynW(mon->Model, L"Generic Fixed Stack Display", _countof(mon->Model));
+					lstrcpynW(mon->Model, L"Unknown Model", _countof(mon->Model));
 				}
 				
 				// Use bitwise operation to extract edidManufactureId
