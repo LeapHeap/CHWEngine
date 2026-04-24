@@ -1,0 +1,64 @@
+# Project: CHWEngine
+# Makefile created by Red Panda C++ 3.4.3279
+
+CXX      = "g++.exe"
+CC       = "gcc.exe"
+WINDRES  = "windres.exe"
+RM       = del /q /f
+CD       = cd /d
+LIBS     = "-Wl,--stack,12582912" "-s" "-lsetupapi" "-ldxgi" "-lwbemuuid" "-lole32" "-loleaut32" "-static"
+INCS     = 
+CXXINCS  = 
+CXXFLAGS = $(CXXINCS) "-fno-ms-extensions" "-O2" "-pipe" "-Werror=return-type" "-Werror=vla" "-DBUILDING_DLL=1"
+CFLAGS   = $(INCS) "-fno-ms-extensions" "-O2" "-pipe" "-Werror=implicit-int" "-Werror=return-type" "-Werror=vla" "-DBUILDING_DLL=1"
+NASM_FLAGS   =  "-f" "elf64"
+WINDRESFLAGS = 
+RES      = CHWEngine_private.res
+OBJ      = dllmain.o MonitorProbe.o CpuProbe.o BoardProbe.o PciProbe.o Utils.o DiskProbe.o AudioProbe.o CHWInterface.o $(RES)
+BIN      = CHWEngine.dll
+LINKOBJ  = "dllmain.o" "MonitorProbe.o" "CpuProbe.o" "BoardProbe.o" "PciProbe.o" "Utils.o" "DiskProbe.o" "AudioProbe.o" "CHWInterface.o" "CHWEngine_private.res"
+CLEANOBJ = "dllmain.o" "MonitorProbe.o" "CpuProbe.o" "BoardProbe.o" "PciProbe.o" "Utils.o" "DiskProbe.o" "AudioProbe.o" "CHWInterface.o" "CHWEngine_private.res" "CHWEngine.dll"
+DEF      = 
+STATIC   = libCHWEngine.a
+OUTPUT_DEF = libCHWEngine.def
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	-$(RM) $(CLEANOBJ) $(STATIC) >NUL 2>&1
+
+CHWEngine.dll: $(DEF) $(OBJ)
+	$(CC) -mdll $(LINKOBJ) -o "CHWEngine.dll" $(LIBS) $(DEF) -Wl,--output-def,$(OUTPUT_DEF),--out-implib,$(STATIC)
+
+dllmain.o: dllmain.c BoardProbe.h CHWInterface.h DiskProbe.h CHWEngine.h AudioProbe.h MonitorProbe.h CpuProbe.h
+	$(CC) -c "dllmain.c" -o "dllmain.o" $(CFLAGS) 
+
+MonitorProbe.o: MonitorProbe.c resource.h Utils.h BoardProbe.h CHWInterface.h DiskProbe.h CHWEngine.h AudioProbe.h MonitorProbe.h CpuProbe.h
+	$(CC) -c "MonitorProbe.c" -o "MonitorProbe.o" $(CFLAGS) 
+
+CpuProbe.o: CpuProbe.c BoardProbe.h CHWInterface.h DiskProbe.h CHWEngine.h AudioProbe.h MonitorProbe.h CpuProbe.h
+	$(CC) -c "CpuProbe.c" -o "CpuProbe.o" $(CFLAGS) 
+
+BoardProbe.o: BoardProbe.c resource.h Utils.h BoardProbe.h CHWInterface.h DiskProbe.h CHWEngine.h AudioProbe.h MonitorProbe.h CpuProbe.h
+	$(CC) -c "BoardProbe.c" -o "BoardProbe.o" $(CFLAGS) 
+
+PciProbe.o: PciProbe.c resource.h Utils.h BoardProbe.h CHWInterface.h PCIProbe.h DiskProbe.h CHWEngine.h AudioProbe.h MonitorProbe.h CpuProbe.h
+	$(CC) -c "PciProbe.c" -o "PciProbe.o" $(CFLAGS) 
+
+Utils.o: Utils.c resource.h Utils.h BoardProbe.h CHWInterface.h DiskProbe.h CHWEngine.h AudioProbe.h MonitorProbe.h CpuProbe.h
+	$(CC) -c "Utils.c" -o "Utils.o" $(CFLAGS) 
+
+DiskProbe.o: DiskProbe.c BoardProbe.h CHWInterface.h DiskProbe.h CHWEngine.h AudioProbe.h MonitorProbe.h CpuProbe.h
+	$(CC) -c "DiskProbe.c" -o "DiskProbe.o" $(CFLAGS) 
+
+AudioProbe.o: AudioProbe.c BoardProbe.h CHWInterface.h DiskProbe.h CHWEngine.h AudioProbe.h MonitorProbe.h CpuProbe.h
+	$(CC) -c "AudioProbe.c" -o "AudioProbe.o" $(CFLAGS) 
+
+CHWInterface.o: CHWInterface.c BoardProbe.h CHWInterface.h DiskProbe.h CHWEngine.h AudioProbe.h MonitorProbe.h CpuProbe.h
+	$(CC) -c "CHWInterface.c" -o "CHWInterface.o" $(CFLAGS) 
+
+CHWEngine_private.res: CHWEngine_private.rc resource.rc 
+	$(WINDRES) -i "CHWEngine_private.rc" --input-format=rc -o "CHWEngine_private.res" -O coff $(WINDRESFLAGS) 
+
