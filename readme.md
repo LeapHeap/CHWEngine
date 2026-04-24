@@ -48,11 +48,11 @@ The ID-Translation mapping databases for chipset, graphics, memory type and moni
 
 ## Exported APIs
 
-Both low-level direct probing functions and encapsulated getter functions are exported. Direct probing functions require invoker to create a HW_REPORT structure in advance and call the functions to populate the structure, which is suitable for low-level programming using C/C++. Encapsulated functions either return numerical values directly or write wide-char encoded text data to the buffer passed in, which is suitable for most of the modern high-level languages. Detailed examples of the usage of the exported APIs are demonstrated in examples of supported programming languages in the SDK package.
+Both low-level direct probing functions and encapsulated getter functions are exported. Direct probing functions require invoker to create a HW_REPORT structure in advance and call the functions to populate the structure, which is suitable for low-level programming using C/C++. Encapsulated functions either return numerical values directly or write wide-char encoded text data to the buffer passed in, which is suitable for most of the modern high-level languages. An extra rundll32-compatible function named 'ExportReportToFile' is also provided for shell scripts and debugging, which saves the report as a text file. Detailed examples of the usage of the exported APIs are demonstrated in examples of supported programming languages in the SDK package.
 
 ## Supported Programming Languages
 
-C/C++, C# and Python are officially supported as invokers. Demos of them are included in the SDK package.
+C/C++, C# and Python are officially supported. Shell scripts like windows batch and VBScript can also invoke the library using rundll32. Demos of them are included in the SDK package.
 
 ## Supported Architectures
 
