@@ -6,9 +6,9 @@ A Win32 C library for hardware information. Lightweight and fast. Built using De
 
 ### On a typical 12th Intel Core platform:
 
-* C/C++: ~6ms
-* Python (ctypes): ~10ms
-* C# (P/Invoke): ~15ms
+* C/C++: ~5ms
+* Python (ctypes): ~8ms
+* C# (P/Invoke): 10~15ms
 
 ## Supported Components
 
@@ -85,7 +85,7 @@ RAM #0: KingBank | DDR5 | 16384 MB | 6000 MT/s
 RAM #1: KingBank | DDR5 | 16384 MB | 6000 MT/s
 
 [GPU] Count: 1
-GPU #0: NVIDIA GeForce RTX 5070 Ti (15.6GB / PALIT)
+GPU #0: NVIDIA GeForce RTX 5070 Ti (15.9GB / PALIT)
 
 [Monitor] Count: 1
 Monitor #0: Philips 27M2N5810 [PHLC32C] (2024) | 3840 x 2160 | 27.2 Inch
@@ -108,7 +108,7 @@ Audio #5: Realtek USB Audio
 Audio #6: Sonic Studio Virtual Mixer
 
 --------------------------------------------------
-Detection completed in: 6.57 ms
+Detection completed in: 4.69 ms
 --------------------------------------------------
 ```
 
