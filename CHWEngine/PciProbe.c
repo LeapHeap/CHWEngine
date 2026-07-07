@@ -112,25 +112,21 @@ UINT64 Internal_GetVramViaRegistry(GPU_INFO* gpu) {
 }
 
 
-static void Internal_ParsePciId(LPCWSTR hwId, GPU_INFO* gpu) {
+static void Internal_ParsePciId(LPCWSTR hwId, GPU_INFO* gpu)
+{
 	LPCWSTR p;
-	
+
 	if ((p = wcsstr(hwId, L"VEN_"))) {
-		wcsncpy(gpu->VenId, p + 4, 4);
-		gpu->VenId[4] = L'\0';
+		lstrcpynW(gpu->VenId, p + 4, 5);
 	}
-	
+
 	if ((p = wcsstr(hwId, L"DEV_"))) {
-		wcsncpy(gpu->DevId, p + 4, 4);
-		gpu->DevId[4] = L'\0';
+		lstrcpynW(gpu->DevId, p + 4, 5);
 	}
-	
+
 	if ((p = wcsstr(hwId, L"SUBSYS_"))) {
-		wcsncpy(gpu->SubDevId, p + 7, 4);
-		gpu->SubDevId[4] = L'\0';
-		
-		wcsncpy(gpu->SubVenId, p + 11, 4);
-		gpu->SubVenId[4] = L'\0';
+		lstrcpynW(gpu->SubDevId, p + 7, 5);
+		lstrcpynW(gpu->SubVenId, p + 11, 5);
 	}
 }
 
@@ -163,7 +159,7 @@ static int Internal_ScanPciBus(const GUID* classGuid, void* targetArray, int max
 			if (type == 0) { // GPU_INFO
 				GPU_INFO* gpu = (GPU_INFO*)currentEntry;
 				Internal_ParsePciId(hwIdList,gpu);
-				WCHAR subVenStr[5];
+				//WCHAR subVenStr[5];
 				// SubVenID mapper
 				Internal_MapIdFromResource(IDR_CSV_GRAPHICS,gpu->SubVenId,gpu->SubVendor,128);
 				SetupDiGetDeviceRegistryPropertyW(hDevInfo, &devData, SPDRP_DEVICEDESC, 

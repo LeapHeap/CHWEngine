@@ -248,7 +248,7 @@ DLLIMPORT void CALLBACK ExportReportToFile(HWND hwnd, HINSTANCE hinst, LPSTR lps
 		APPEND_LINE(L"Audio #%d: %s\n", i, report.Audios[i].Model);
 	}
 	
-	WCHAR timeBuf[128];
+	//WCHAR timeBuf[128];
 	int tWhole = (int)elapsedMilliseconds;
 	int tFrac = (int)((elapsedMilliseconds - (double)tWhole) * 100.0);
 	

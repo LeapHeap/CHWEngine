@@ -1,11 +1,17 @@
 #ifndef CHWENGINE_H
 #define CHWENGINE_H
 
-#if BUILDING_DLL
+#if CHWENGINE_EXPORTS
 #define DLLIMPORT __declspec(dllexport)
 #else
 #define DLLIMPORT __declspec(dllimport)
 #endif
+
+#pragma comment(lib, "SetupAPI.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "wbemuuid.lib")
+#pragma comment(lib, "Ole32.lib")
+#pragma comment(lib, "OleAut32.lib")
 
 #include <windows.h>
 
