@@ -54,6 +54,14 @@ void Internal_GetVramViaDXGI(GPU_INFO* gpu) {
 }
 #endif
 
+static BOOL IsValidVramValue(UINT64 val, DWORD bitWidth) {
+	if (val == 0) return FALSE;
+	if (bitWidth == 32 && val == 0xFFFFFFFFULL) return FALSE;      // DOWRD
+	if (bitWidth == 64 && val == 0xFFFFFFFFFFFFFFFFULL) return FALSE; // QWORD
+	//if (val > (256ULL * 1024 * 1024 * 1024)) return FALSE;
+	return TRUE;
+}
+
 UINT64 Internal_GetVramViaRegistry(GPU_INFO* gpu) {
 	HDEVINFO hDevInfo;
 	SP_DEVINFO_DATA devInfoData;
@@ -61,52 +69,78 @@ UINT64 Internal_GetVramViaRegistry(GPU_INFO* gpu) {
 	UINT64 vramSize = 0;
 	DWORD i = 0;
 	WCHAR deviceId[MAX_PATH];
-	
-	GUID DisplayClassGuid = { 0x4d36e968, 0xe325, 0x11ce, { 0xbf, 0xc1, 0x08, 0x00, 0x2b, 0xe1, 0x03, 0x18 } };
-	
-	hDevInfo = SetupDiGetClassDevsW(&DisplayClassGuid, NULL, NULL, DIGCF_PRESENT);
+
+	hDevInfo = SetupDiGetClassDevsW(&GUID_DEVCLASS_DISPLAY, NULL, NULL, DIGCF_PRESENT);
 	if (hDevInfo == INVALID_HANDLE_VALUE) return 0;
-	
+
 	devInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
-	
+
 	while (SetupDiEnumDeviceInfo(hDevInfo, i++, &devInfoData)) {
 		if (SetupDiGetDeviceInstanceIdW(hDevInfo, &devInfoData, deviceId, MAX_PATH, NULL)) {
-			
+
 			LPWSTR pVen = wcsstr(deviceId, L"VEN_");
 			LPWSTR pDev = wcsstr(deviceId, L"DEV_");
-			
+
 			if (pVen && pDev) {
-				if (_wcsnicmp(pVen + 4, gpu->VenId, 4) == 0 && 
+				if (_wcsnicmp(pVen + 4, gpu->VenId, 4) == 0 &&
 					_wcsnicmp(pDev + 4, gpu->DevId, 4) == 0) {
-					
+
 					hKey = SetupDiOpenDevRegKey(hDevInfo, &devInfoData, DICS_FLAG_GLOBAL, 0, DIREG_DRV, KEY_READ);
-					
+
 					if (hKey != (HKEY)INVALID_HANDLE_VALUE) {
 						DWORD dwType = 0;
-						DWORD dwSize = sizeof(UINT64);
-						
-						if (RegQueryValueExW(hKey, L"HardwareInformation.qwMemorySize", NULL, &dwType, (LPBYTE)&vramSize, &dwSize) != ERROR_SUCCESS) {
-							DWORD vram32 = 0;
+						DWORD dwSize;
+						UINT64 vram64 = 0;
+						DWORD  vram32 = 0;
+						BOOL   ok = FALSE;
+
+						// 1) Try QWORD query
+						dwType = 0;
+						dwSize = sizeof(UINT64);
+						if (RegQueryValueExW(hKey, L"HardwareInformation.qwMemorySize", NULL, &dwType,
+							(LPBYTE)&vram64, &dwSize) == ERROR_SUCCESS
+							&& dwType == REG_QWORD
+							&& IsValidVramValue(vram64, 64)) {
+							vramSize = vram64;
+							ok = TRUE;
+						}
+
+						// 2) Fallback to HardwareInformation.MemorySize (DWORD)
+						if (!ok) {
+							dwType = 0;
 							dwSize = sizeof(DWORD);
-							if (RegQueryValueExW(hKey, L"HardwareInformation.MemorySize", NULL, &dwType, (LPBYTE)&vram32, &dwSize) == ERROR_SUCCESS) {
+							if (RegQueryValueExW(hKey, L"HardwareInformation.MemorySize", NULL, &dwType,
+								(LPBYTE)&vram32, &dwSize) == ERROR_SUCCESS
+								&& dwType == REG_DWORD
+								&& IsValidVramValue((UINT64)vram32, 32)) {
 								vramSize = (UINT64)vram32;
-							} else {
-								dwSize = sizeof(DWORD);
-								if (RegQueryValueExW(hKey, L"MemorySize", NULL, &dwType, (LPBYTE)&vram32, &dwSize) == ERROR_SUCCESS) {
-									vramSize = (UINT64)vram32;
-								}
+								ok = TRUE;
 							}
 						}
+
+						// 3) Fallback to MemorySize (DWORD)
+						if (!ok) {
+							dwType = 0;
+							dwSize = sizeof(DWORD);
+							if (RegQueryValueExW(hKey, L"MemorySize", NULL, &dwType,
+								(LPBYTE)&vram32, &dwSize) == ERROR_SUCCESS
+								&& dwType == REG_DWORD
+								&& IsValidVramValue((UINT64)vram32, 32)) {
+								vramSize = (UINT64)vram32;
+								ok = TRUE;
+							}
+						}
+
 						RegCloseKey(hKey);
 					}
-					
+
 					gpu->VRamSizeByte = vramSize;
-					break; 
+					break;
 				}
 			}
 		}
 	}
-	
+
 	SetupDiDestroyDeviceInfoList(hDevInfo);
 	return vramSize;
 }

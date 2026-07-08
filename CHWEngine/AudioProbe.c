@@ -1,14 +1,15 @@
 #include "AudioProbe.h"
 #include <windows.h>
-#include <setupapi.h>
 #include <devguid.h>
+#include <setupapi.h>
 #include "CHWEngine.h"
 
 void ProbeAudios(HW_REPORT* report) {
 	report->AudioCount = 0;
-	static const GUID MediaClassGuid = { 0x4d36e96c, 0xe325, 0x11ce, { 0xbf, 0xc1, 0x08, 0x00, 0x2b, 0xe1, 0x03, 0x18 } };
 	
-	HDEVINFO hDevInfo = SetupDiGetClassDevsW(&MediaClassGuid, NULL, NULL, DIGCF_PRESENT);
+	//static const GUID MediaClassGuid = { 0x4d36e96c, 0xe325, 0x11ce, { 0xbf, 0xc1, 0x08, 0x00, 0x2b, 0xe1, 0x03, 0x18 } };
+	
+	HDEVINFO hDevInfo = SetupDiGetClassDevsW(&GUID_DEVCLASS_MEDIA, NULL, NULL, DIGCF_PRESENT);
 	if (hDevInfo == INVALID_HANDLE_VALUE) return;
 	
 	SP_DEVINFO_DATA devInfoData;
