@@ -8,7 +8,6 @@
 #endif
 
 #pragma comment(lib, "SetupAPI.lib")
-#pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "wbemuuid.lib")
 #pragma comment(lib, "Ole32.lib")
 #pragma comment(lib, "OleAut32.lib")
@@ -21,6 +20,7 @@ typedef struct {
 	WCHAR Model[128];
 	int   CoreCount;    // Physical Cores (P-cores + E-cores)
 	int   ThreadCount;  // Logical Processors
+	DWORD BaseClockMHz;
 } CPU_INFO;
 
 typedef struct{

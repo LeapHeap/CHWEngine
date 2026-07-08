@@ -144,6 +144,14 @@ DLLIMPORT int GetCpuThreadCount(int index){
 	return g_Cache.Cpus[index].ThreadCount;
 }
 
+DLLIMPORT DWORD GetCpuBaseClockSpeed() {
+	if (!g_Status.Cpu) {
+		ProbeCpus(&g_Cache);
+		g_Status.Cpu = TRUE;
+	}
+	return g_Cache.Cpus[0].BaseClockMHz;
+}
+
 DLLIMPORT void CALLBACK ExportReportToFile(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
 	double elapsedMilliseconds;
 	/* Time count*/
@@ -199,9 +207,10 @@ DLLIMPORT void CALLBACK ExportReportToFile(HWND hwnd, HINSTANCE hinst, LPSTR lps
 	}
 	
 	APPEND_LINE(L"\n[CPU] Count: %d\n", report.CpuCount);
+	DWORD CpuClock = report.Cpus[0].BaseClockMHz;
 	for (int i = 0; i < report.CpuCount; i++) {
 		const CPU_INFO* cpu = &report.Cpus[i];
-		APPEND_LINE(L"Socket #%d: %s | %dC%dT\n", i, cpu->Model, cpu->CoreCount, cpu->ThreadCount);
+		APPEND_LINE(L"Socket #%d: %s | %dC%dT | %d MHz\n", i, cpu->Model, cpu->CoreCount, cpu->ThreadCount, CpuClock);
 	}
 	
 	APPEND_LINE(L"\n[RAM] Count: %d\n", report.RamCount);

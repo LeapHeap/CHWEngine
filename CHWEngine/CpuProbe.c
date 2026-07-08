@@ -4,6 +4,44 @@
 #include "CHWEngine.h"
 #include "CpuProbe.h"
 
+static BOOL Internal_GetCpuBaseClock(DWORD* pMHz)
+{
+	HKEY hKey;
+	DWORD mhz;
+	DWORD size = sizeof(mhz);
+	DWORD type;
+
+	if (pMHz == NULL)
+		return FALSE;
+
+	if (RegOpenKeyExW(
+		HKEY_LOCAL_MACHINE,
+		L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+		0,
+		KEY_READ,
+		&hKey) != ERROR_SUCCESS)
+	{
+		return FALSE;
+	}
+
+	if (RegQueryValueExW(
+		hKey,
+		L"~MHz",
+		NULL,
+		&type,
+		(LPBYTE)&mhz,
+		&size) != ERROR_SUCCESS ||
+		type != REG_DWORD)
+	{
+		RegCloseKey(hKey);
+		return FALSE;
+	}
+
+	RegCloseKey(hKey);
+
+	*pMHz = mhz;
+	return TRUE;
+}
 
 void ProbeCpus(HW_REPORT* report) {
 	report->CpuCount = 0;
@@ -68,4 +106,12 @@ void ProbeCpus(HW_REPORT* report) {
 		}
 	}
 	free(buffer);
+
+	// Populate base clock speed of central processor
+	CPU_INFO* cpu = &report->Cpus[0];
+	cpu->BaseClockMHz = 0;
+	Internal_GetCpuBaseClock(&cpu->BaseClockMHz);
+	/*WCHAR msg[32];
+	wsprintfW(msg, L"%d", cpu->BaseClockMHz);
+	MessageBoxW(NULL, msg, L"", MB_OK);*/
 }

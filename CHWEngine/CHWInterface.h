@@ -42,6 +42,7 @@ MONITOR_VAL_FIELDS
 
 DLLIMPORT int GetCpuCoreCount(int index);
 DLLIMPORT int GetCpuThreadCount(int index);
+DLLIMPORT DWORD GetCpuBaseClockSpeed();
 
 DLLIMPORT void CALLBACK ExportReportToFile(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow);
 
