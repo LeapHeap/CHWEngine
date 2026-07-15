@@ -83,4 +83,10 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="db\Chipset.csv" />
+    <None Include="db\Graphics.csv" />
+    <None Include="db\Monitors.csv" />
+    <None Include="db\MemType.csv" />
+  </ItemGroup>
 </Project>

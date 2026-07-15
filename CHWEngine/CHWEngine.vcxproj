@@ -155,6 +155,12 @@
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="db\Chipset.csv" />
+    <None Include="db\Graphics.csv" />
+    <None Include="db\MemType.csv" />
+    <None Include="db\Monitors.csv" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

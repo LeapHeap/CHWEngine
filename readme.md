@@ -1,6 +1,6 @@
 ## CHWEngine
 
-A Win32 C library for hardware information. Lightweight and fast. Built using Dev-C++ w/ MinGW.
+A Win32 C library for hardware information. Lightweight and fast.
 
 ## Performance
 
@@ -17,6 +17,7 @@ A Win32 C library for hardware information. Lightweight and fast. Built using De
 | CPU         | Model                      |
 |             | Cores                      |
 |             | Threads                    |
+|             | Base Clock Speed           |
 | Motherboard | Manufacturer               |
 |             | System Model (System Name) |
 |             | Model                      |
@@ -66,7 +67,7 @@ Compiled DLLs of supported architectures, C/C++ header files and examples of the
 
 ```
 --------------------------------------------------
-CHWEngine SDK - C Demo
+CHWEngine SDK - Hardware Report
 --------------------------------------------------
 
 [Motherboard] Count: 1
@@ -78,7 +79,7 @@ Board #0:
   BIOS:         4301
 
 [CPU] Count: 1
-Socket #0: 12th Gen Intel(R) Core(TM) i9-12900KS | 16C24T
+Socket #0: 12th Gen Intel(R) Core(TM) i9-12900KS | 16C24T | 3418 MHz
 
 [RAM] Count: 2
 RAM #0: KingBank | DDR5 | 16384 MB | 6000 MT/s
@@ -99,8 +100,8 @@ NIC #0: Intel(R) Ethernet Controller (3) I225-V
 NIC #1: Intel(R) Wi-Fi 6E AX211 160MHz
 
 [Audio] Count: 7
-Audio #0: NVIDIA High Definition Audio
-Audio #1: Shure MV5
+Audio #0: Shure MV5
+Audio #1: NVIDIA High Definition Audio
 Audio #2: WH-1000XM4 Stereo
 Audio #3: NVIDIA Virtual Audio Device (Wave Extensible) (WDM)
 Audio #4: WH-1000XM4 Hands-Free AG Audio
@@ -108,7 +109,8 @@ Audio #5: Realtek USB Audio
 Audio #6: Sonic Studio Virtual Mixer
 
 --------------------------------------------------
-Detection completed in: 4.69 ms
+Detection completed in: 4.86 ms
 --------------------------------------------------
+
 ```
 
