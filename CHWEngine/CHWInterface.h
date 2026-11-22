@@ -44,8 +44,13 @@ DLLIMPORT int GetCpuCoreCount(int index);
 DLLIMPORT int GetCpuThreadCount(int index);
 DLLIMPORT DWORD GetCpuBaseClockSpeed();
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 DLLIMPORT void CALLBACK ExportReportToFile(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow);
-
+#ifdef __cplusplus
+}
+#endif
 
 
 
